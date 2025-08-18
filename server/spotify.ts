@@ -60,11 +60,14 @@ export class SpotifyService {
 
   // Generate Spotify authorization URL
   getAuthUrl(): string {
+    const state = Math.random().toString(36).substring(7);
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: this.config.clientId,
       scope: 'user-read-private user-read-email playlist-read-private playlist-modify-public playlist-modify-private',
       redirect_uri: this.config.redirectUri,
+      state: state,
+      show_dialog: 'true'
     });
 
     return `https://accounts.spotify.com/authorize?${params.toString()}`;

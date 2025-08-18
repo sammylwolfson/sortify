@@ -62,7 +62,43 @@ export function SpotifyConnect({ accessToken, onConnect }: SpotifyConnectProps) 
   });
 
   const handleSpotifyConnect = () => {
-    window.location.href = "/auth/spotify";
+    // Open Spotify auth in a new window to avoid CORS issues
+    const authWindow = window.open(
+      "/auth/spotify",
+      "spotify-auth",
+      "width=600,height=700,scrollbars=yes,resizable=yes"
+    );
+
+    // Listen for the auth completion
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      
+      if (event.data.type === 'SPOTIFY_AUTH_SUCCESS') {
+        authWindow?.close();
+        onConnect(event.data.token);
+        toast({
+          title: "Success",
+          description: `Connected to Spotify as ${event.data.user}`,
+        });
+      } else if (event.data.type === 'SPOTIFY_AUTH_ERROR') {
+        authWindow?.close();
+        toast({
+          title: "Error",
+          description: "Failed to connect to Spotify",
+          variant: "destructive",
+        });
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    
+    // Clean up listener if window is closed manually
+    const checkClosed = setInterval(() => {
+      if (authWindow?.closed) {
+        window.removeEventListener('message', handleMessage);
+        clearInterval(checkClosed);
+      }
+    }, 1000);
   };
 
   const handleSyncPlaylist = (spotifyId: string) => {

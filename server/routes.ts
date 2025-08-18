@@ -181,25 +181,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const code = req.query.code as string;
       const error = req.query.error as string;
+      const state = req.query.state as string;
       
       if (error) {
-        return res.redirect('/?spotify_error=' + encodeURIComponent(error));
+        return res.send(`
+          <html>
+            <body>
+              <script>
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: '${error}' }, '*');
+                window.close();
+              </script>
+              <p>Authentication failed. This window should close automatically.</p>
+            </body>
+          </html>
+        `);
       }
       
       if (!code) {
-        return res.redirect('/?spotify_error=no_code');
+        return res.send(`
+          <html>
+            <body>
+              <script>
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: 'no_code' }, '*');
+                window.close();
+              </script>
+              <p>No authorization code received. This window should close automatically.</p>
+            </body>
+          </html>
+        `);
       }
 
       const tokenData = await spotifyService.getAccessToken(code);
       const userProfile = await spotifyService.getUserProfile(tokenData.access_token);
 
-      // Redirect back to frontend with tokens in URL parameters (for demo purposes)
-      // In production, you'd store these securely
-      const redirectUrl = `/?spotify_token=${encodeURIComponent(tokenData.access_token)}&spotify_user=${encodeURIComponent(userProfile.display_name)}`;
-      res.redirect(redirectUrl);
+      // Send success message to parent window and close popup
+      res.send(`
+        <html>
+          <body>
+            <script>
+              localStorage.setItem('spotify_access_token', '${tokenData.access_token}');
+              localStorage.setItem('spotify_user_name', '${userProfile.display_name}');
+              window.opener?.postMessage({ 
+                type: 'SPOTIFY_AUTH_SUCCESS', 
+                token: '${tokenData.access_token}',
+                user: '${userProfile.display_name}'
+              }, '*');
+              window.close();
+            </script>
+            <p>Authentication successful! This window should close automatically.</p>
+          </body>
+        </html>
+      `);
     } catch (error) {
       console.error("Spotify auth error:", error);
-      res.redirect('/?spotify_error=auth_failed');
+      res.send(`
+        <html>
+          <body>
+            <script>
+              window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: 'auth_failed' }, '*');
+              window.close();
+            </script>
+            <p>Authentication failed. This window should close automatically.</p>
+          </body>
+        </html>
+      `);
     }
   });
 
