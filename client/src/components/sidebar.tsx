@@ -87,7 +87,12 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
               <Button
                 key={playlist.id}
                 variant="ghost"
-                className="w-full justify-start text-left p-2 h-auto text-listlab-text hover:text-white text-sm truncate"
+                onClick={() => setLocation(`/spotify-playlist/${playlist.id}`)}
+                className={`w-full justify-start text-left p-2 h-auto text-sm truncate ${
+                  location === `/spotify-playlist/${playlist.id}` 
+                    ? "text-white" 
+                    : "text-listlab-text hover:text-white"
+                }`}
               >
                 <Music className="h-4 w-4 mr-2 flex-shrink-0" />
                 <span className="truncate">{playlist.name}</span>

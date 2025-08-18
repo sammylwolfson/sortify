@@ -147,6 +147,21 @@ export class SpotifyService {
     return data.items;
   }
 
+  // Get detailed playlist information with tracks
+  async getPlaylistDetails(accessToken: string, playlistId: string) {
+    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get playlist details');
+    }
+
+    return await response.json();
+  }
+
   // Get playlist tracks
   async getPlaylistTracks(accessToken: string, playlistId: string): Promise<SpotifyTrack[]> {
     const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {

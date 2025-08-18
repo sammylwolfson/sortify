@@ -265,6 +265,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get specific Spotify playlist details with tracks
+  app.get("/api/spotify/playlists/:id", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).json({ message: "No access token provided" });
+      }
+
+      const accessToken = authHeader.replace("Bearer ", "");
+      const playlistId = req.params.id;
+      const playlist = await spotifyService.getPlaylistDetails(accessToken, playlistId);
+      res.json(playlist);
+    } catch (error) {
+      console.error("Failed to fetch Spotify playlist details:", error);
+      res.status(500).json({ message: "Failed to fetch playlist details" });
+    }
+  });
+
   app.post("/api/spotify/sync-playlist/:spotifyId", async (req, res) => {
     try {
       const accessToken = req.headers.authorization?.replace('Bearer ', '');

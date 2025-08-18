@@ -6,12 +6,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SpotifyProvider } from "@/hooks/use-spotify";
 import Home from "@/pages/home";
 import PlaylistDetail from "@/pages/playlist-detail";
+import { SpotifyPlaylistDetail } from "@/pages/spotify-playlist-detail";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/playlist/:id" component={PlaylistDetail} />
+      <Route path="/spotify-playlist/:id" component={SpotifyPlaylistDetail} />
       <Route component={Home} />
     </Switch>
   );

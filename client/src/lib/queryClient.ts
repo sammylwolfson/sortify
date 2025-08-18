@@ -29,8 +29,20 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey[0] as string, {
+    const url = queryKey[0] as string;
+    const headers: Record<string, string> = {};
+    
+    // Add Spotify token for Spotify API requests
+    if (url.includes('/api/spotify/')) {
+      const spotifyToken = localStorage.getItem('spotify_access_token');
+      if (spotifyToken) {
+        headers['Authorization'] = `Bearer ${spotifyToken}`;
+      }
+    }
+    
+    const res = await fetch(url, {
       credentials: "include",
+      headers,
     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
