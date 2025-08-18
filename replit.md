@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a modern playlist management web application called "ListLab" built with React, Express, and in-memory storage. The application maintains Spotify's visual interface and design aesthetics while being branded as ListLab, allowing users to create playlists, manage songs, and browse music content. It features a dark theme design with ListLab's green accent colors.
+This is a modern playlist management web application called "ListLab" built with React, Express, and PostgreSQL. The application maintains Spotify's visual interface and design aesthetics while being branded as ListLab, featuring full Spotify API integration for authentic music data. Users can create local playlists, import real Spotify playlists, search Spotify's music catalog, and manage their music library with a seamless experience. It features a dark theme design with ListLab's green accent colors and popup-based OAuth authentication.
 
 ## System Architecture
 
@@ -44,12 +44,14 @@ The application uses five main tables:
 - `GET /api/artists` - Browse artists
 
 ### UI Components
-- **Sidebar**: Navigation with ListLab logo and menu items
+- **Sidebar**: Navigation with ListLab logo, menu items, and dynamic Spotify playlists
 - **PlaylistCard**: Grid display of playlists with hover effects
-- **SongList**: Table view of songs with playback controls
-- **SearchBar**: Real-time search with dropdown results
+- **SongList**: Table view of songs with playback controls and error handling
+- **SearchBar**: Real-time search with dropdown results from Spotify API
 - **PlaybackControls**: Fixed bottom player interface
 - **CreatePlaylistModal**: Form for creating new playlists
+- **SpotifyConnect**: Modal for OAuth authentication and playlist import
+- **SpotifyPlaylistDetail**: Dedicated view for Spotify playlist content
 
 ## Data Flow
 
@@ -102,6 +104,10 @@ Changelog:
 - August 18, 2025. Implemented full Spotify API OAuth integration with popup-based authentication
 - August 18, 2025. Fixed CORS authentication issues using secure popup flow and postMessage communication
 - August 18, 2025. Spotify integration fully operational - users can now authenticate and import real playlists
+- August 18, 2025. Added Spotify playlists to sidebar navigation with clickable functionality
+- August 18, 2025. Created dedicated Spotify playlist detail pages with full track listings
+- August 18, 2025. Fixed authentication token passing and SongList component error handling
+- August 18, 2025. Complete Spotify integration milestone achieved - users can view and interact with real Spotify data
 ```
 
 ## User Preferences
