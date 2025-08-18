@@ -1,8 +1,9 @@
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Home, Search, Library, Plus, Heart, List } from "lucide-react";
+import { Home, Search, Library, Plus, Heart, List, Music } from "lucide-react";
 import type { Playlist } from "@shared/schema";
+import { useSpotify } from "@/hooks/use-spotify";
 
 interface SidebarProps {
   onCreatePlaylist?: () => void;
@@ -10,9 +11,15 @@ interface SidebarProps {
 
 export function Sidebar({ onCreatePlaylist }: SidebarProps) {
   const [location, setLocation] = useLocation();
+  const { accessToken } = useSpotify();
   
   const { data: playlists } = useQuery({
     queryKey: ["/api/playlists"],
+  });
+
+  const { data: spotifyPlaylists } = useQuery({
+    queryKey: ["/api/spotify/playlists"],
+    enabled: !!accessToken,
   });
 
   return (
@@ -71,7 +78,26 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
         </Button>
       </div>
       
-      {/* Playlists List */}
+      {/* Spotify Playlists */}
+      {accessToken && spotifyPlaylists && spotifyPlaylists.length > 0 && (
+        <div className="px-6 py-4 border-t border-gray-800">
+          <h3 className="text-sm font-semibold text-listlab-text mb-3 uppercase tracking-wider">Your Spotify Playlists</h3>
+          <div className="space-y-1 max-h-60 overflow-y-auto">
+            {spotifyPlaylists.map((playlist: any) => (
+              <Button
+                key={playlist.id}
+                variant="ghost"
+                className="w-full justify-start text-left p-2 h-auto text-listlab-text hover:text-white text-sm truncate"
+              >
+                <Music className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span className="truncate">{playlist.name}</span>
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ListLab Playlists */}
       <div className="flex-1 px-6 overflow-y-auto scrollbar-hide">
         <div className="space-y-2">
           {playlists && Array.isArray(playlists) ? playlists.map((playlist: Playlist) => (

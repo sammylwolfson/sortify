@@ -12,6 +12,8 @@ interface SongListProps {
 }
 
 export function SongList({ playlistId, songs }: SongListProps) {
+  // Handle undefined or null songs
+  const safeSongs = songs || [];
   const [hoveredSong, setHoveredSong] = useState<number | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -51,7 +53,7 @@ export function SongList({ playlistId, songs }: SongListProps) {
     removeSongMutation.mutate(songId);
   };
 
-  if (songs.length === 0) {
+  if (safeSongs.length === 0) {
     return (
       <div className="p-8 text-center">
         <h2 className="text-xl font-semibold mb-4">No songs in this playlist</h2>
@@ -75,7 +77,7 @@ export function SongList({ playlistId, songs }: SongListProps) {
 
       {/* Songs */}
       <div className="space-y-1">
-        {songs.map((playlistSong, index) => (
+        {safeSongs.map((playlistSong, index) => (
           <div
             key={playlistSong.id}
             className="group grid grid-cols-12 gap-4 px-4 py-2 rounded-md hover:bg-spotify-light-gray transition-colors"
