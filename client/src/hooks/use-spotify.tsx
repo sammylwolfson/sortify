@@ -20,10 +20,23 @@ export function SpotifyProvider({ children }: { children: ReactNode }) {
 
     // Check if we're coming back from Spotify auth
     const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
+    const spotifyToken = urlParams.get('spotify_token');
+    const spotifyError = urlParams.get('spotify_error');
+    const spotifyUser = urlParams.get('spotify_user');
     
-    if (code) {
-      // Remove the code from the URL without refreshing the page
+    if (spotifyToken) {
+      setAccessToken(spotifyToken);
+      localStorage.setItem('spotify_access_token', spotifyToken);
+      if (spotifyUser) {
+        localStorage.setItem('spotify_user_name', spotifyUser);
+      }
+      // Remove the tokens from the URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    if (spotifyError) {
+      console.error('Spotify authentication error:', spotifyError);
+      // Remove the error from the URL
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);

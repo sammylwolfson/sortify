@@ -172,28 +172,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.redirect(authUrl);
   });
 
+  app.get("/auth/spotify/redirect-uri", (req, res) => {
+    const redirectUri = process.env.SPOTIFY_REDIRECT_URI || `${process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'http://localhost:5000'}/auth/spotify/callback`;
+    res.json({ redirectUri });
+  });
+
   app.get("/auth/spotify/callback", async (req, res) => {
     try {
       const code = req.query.code as string;
+      const error = req.query.error as string;
+      
+      if (error) {
+        return res.redirect('/?spotify_error=' + encodeURIComponent(error));
+      }
       
       if (!code) {
-        return res.status(400).json({ message: "No authorization code provided" });
+        return res.redirect('/?spotify_error=no_code');
       }
 
       const tokenData = await spotifyService.getAccessToken(code);
       const userProfile = await spotifyService.getUserProfile(tokenData.access_token);
 
-      // In a real app, you'd save this to the user's record
-      // For now, we'll return the tokens for the frontend to handle
-      res.json({
-        access_token: tokenData.access_token,
-        refresh_token: tokenData.refresh_token,
-        spotify_user_id: userProfile.id,
-        user_profile: userProfile
-      });
+      // Redirect back to frontend with tokens in URL parameters (for demo purposes)
+      // In production, you'd store these securely
+      const redirectUrl = `/?spotify_token=${encodeURIComponent(tokenData.access_token)}&spotify_user=${encodeURIComponent(userProfile.display_name)}`;
+      res.redirect(redirectUrl);
     } catch (error) {
       console.error("Spotify auth error:", error);
-      res.status(500).json({ message: "Failed to authenticate with Spotify" });
+      res.redirect('/?spotify_error=auth_failed');
     }
   });
 

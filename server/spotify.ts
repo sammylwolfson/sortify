@@ -54,7 +54,7 @@ export class SpotifyService {
     this.config = {
       clientId: process.env.SPOTIFY_CLIENT_ID!,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET!,
-      redirectUri: process.env.SPOTIFY_REDIRECT_URI || 'http://localhost:5000/auth/spotify/callback'
+      redirectUri: process.env.SPOTIFY_REDIRECT_URI || `${process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'http://localhost:5000'}/auth/spotify/callback`
     };
   }
 
