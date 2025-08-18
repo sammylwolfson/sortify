@@ -4,13 +4,27 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import type { Song } from "@shared/schema";
 
-export function SearchBar() {
+interface SearchBarProps {
+  spotifyAccessToken?: string | null;
+}
+
+export function SearchBar({ spotifyAccessToken }: SearchBarProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Use Spotify search if connected, otherwise use local search
+  const searchEndpoint = spotifyAccessToken ? "/api/spotify/search" : "/api/songs/search";
+  const searchHeaders = spotifyAccessToken ? {
+    'Authorization': `Bearer ${spotifyAccessToken}`
+  } : {};
+
   const { data: searchResults, isLoading } = useQuery({
-    queryKey: ["/api/songs/search", { q: searchQuery }],
+    queryKey: [searchEndpoint, { q: searchQuery }],
+    queryFn: () => 
+      fetch(`${searchEndpoint}?q=${encodeURIComponent(searchQuery)}`, {
+        headers: searchHeaders
+      }).then(res => res.json()),
     enabled: searchQuery.length > 2,
-  });
+  }) as { data: Song[] | undefined; isLoading: boolean };
 
   return (
     <div className="flex-1 max-w-md mx-8 relative">
@@ -35,7 +49,7 @@ export function SearchBar() {
               {searchResults.map((song: Song) => (
                 <div
                   key={song.id}
-                  className="px-4 py-2 hover:bg-spotify-light-gray cursor-pointer flex items-center space-x-3"
+                  className="px-4 py-2 hover:bg-listlab-light-gray cursor-pointer flex items-center space-x-3"
                 >
                   <img
                     src={song.coverImage || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=50&h=50"}
@@ -44,7 +58,7 @@ export function SearchBar() {
                   />
                   <div>
                     <p className="font-medium text-white">{song.title}</p>
-                    <p className="text-sm spotify-text">{song.artist}</p>
+                    <p className="text-sm listlab-text">{song.artist}</p>
                   </div>
                 </div>
               ))}

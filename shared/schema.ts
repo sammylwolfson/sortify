@@ -10,6 +10,8 @@ export const playlists = pgTable("playlists", {
   userId: integer("user_id").notNull(),
   isPublic: boolean("is_public").default(false),
   createdAt: timestamp("created_at").defaultNow(),
+  spotifyId: text("spotify_id"),
+  isSpotifyLinked: boolean("is_spotify_linked").default(false),
 });
 
 export const songs = pgTable("songs", {
@@ -20,6 +22,8 @@ export const songs = pgTable("songs", {
   duration: integer("duration").notNull(), // duration in seconds
   coverImage: text("cover_image"),
   audioUrl: text("audio_url"),
+  spotifyId: text("spotify_id"),
+  previewUrl: text("preview_url"),
 });
 
 export const playlistSongs = pgTable("playlist_songs", {
@@ -41,6 +45,9 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  spotifyAccessToken: text("spotify_access_token"),
+  spotifyRefreshToken: text("spotify_refresh_token"),
+  spotifyUserId: text("spotify_user_id"),
 });
 
 export const insertPlaylistSchema = createInsertSchema(playlists).omit({

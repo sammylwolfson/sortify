@@ -6,12 +6,15 @@ import { ArtistCard } from "@/components/artist-card";
 import { PlaybackControls } from "@/components/playback-controls";
 import { CreatePlaylistModal } from "@/components/create-playlist-modal";
 import { SearchBar } from "@/components/search-bar";
+import { SpotifyConnect } from "@/components/spotify-connect";
+import { useSpotify } from "@/hooks/use-spotify";
 import { Button } from "@/components/ui/button";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Playlist, Artist } from "@shared/schema";
 
 export default function Home() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { accessToken, setAccessToken } = useSpotify();
 
   const { data: playlists, isLoading: playlistsLoading } = useQuery({
     queryKey: ["/api/playlists"],
@@ -72,9 +75,10 @@ export default function Home() {
             </Button>
           </div>
           
-          <SearchBar />
+          <SearchBar spotifyAccessToken={accessToken} />
           
           <div className="flex items-center space-x-4">
+            <SpotifyConnect accessToken={accessToken} onConnect={setAccessToken} />
             <Button className="listlab-green listlab-green-hover text-black font-semibold px-6 py-2 rounded-full">
               Upgrade
             </Button>

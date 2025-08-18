@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertPlaylistSchema, insertSongSchema, insertPlaylistSongSchema } from "@shared/schema";
 import { z } from "zod";
+import { spotifyService } from "./spotify";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Default user ID for demo purposes
@@ -162,6 +163,127 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(artists);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch artists" });
+    }
+  });
+
+  // Spotify Authentication Routes
+  app.get("/auth/spotify", (req, res) => {
+    const authUrl = spotifyService.getAuthUrl();
+    res.redirect(authUrl);
+  });
+
+  app.get("/auth/spotify/callback", async (req, res) => {
+    try {
+      const code = req.query.code as string;
+      
+      if (!code) {
+        return res.status(400).json({ message: "No authorization code provided" });
+      }
+
+      const tokenData = await spotifyService.getAccessToken(code);
+      const userProfile = await spotifyService.getUserProfile(tokenData.access_token);
+
+      // In a real app, you'd save this to the user's record
+      // For now, we'll return the tokens for the frontend to handle
+      res.json({
+        access_token: tokenData.access_token,
+        refresh_token: tokenData.refresh_token,
+        spotify_user_id: userProfile.id,
+        user_profile: userProfile
+      });
+    } catch (error) {
+      console.error("Spotify auth error:", error);
+      res.status(500).json({ message: "Failed to authenticate with Spotify" });
+    }
+  });
+
+  // Spotify Sync Routes
+  app.get("/api/spotify/playlists", async (req, res) => {
+    try {
+      const accessToken = req.headers.authorization?.replace('Bearer ', '');
+      
+      if (!accessToken) {
+        return res.status(401).json({ message: "No access token provided" });
+      }
+
+      const spotifyPlaylists = await spotifyService.getUserPlaylists(accessToken);
+      res.json(spotifyPlaylists);
+    } catch (error) {
+      console.error("Error fetching Spotify playlists:", error);
+      res.status(500).json({ message: "Failed to fetch Spotify playlists" });
+    }
+  });
+
+  app.post("/api/spotify/sync-playlist/:spotifyId", async (req, res) => {
+    try {
+      const accessToken = req.headers.authorization?.replace('Bearer ', '');
+      const spotifyPlaylistId = req.params.spotifyId;
+      
+      if (!accessToken) {
+        return res.status(401).json({ message: "No access token provided" });
+      }
+
+      // Get playlist from Spotify
+      const spotifyPlaylists = await spotifyService.getUserPlaylists(accessToken);
+      const spotifyPlaylist = spotifyPlaylists.find(p => p.id === spotifyPlaylistId);
+      
+      if (!spotifyPlaylist) {
+        return res.status(404).json({ message: "Spotify playlist not found" });
+      }
+
+      // Convert and create local playlist
+      const playlistData = spotifyService.convertSpotifyPlaylistToPlaylist(spotifyPlaylist, defaultUserId);
+      const localPlaylist = await storage.createPlaylist(playlistData);
+
+      // Get and sync tracks
+      const spotifyTracks = await spotifyService.getPlaylistTracks(accessToken, spotifyPlaylistId);
+      
+      for (let i = 0; i < spotifyTracks.length; i++) {
+        const track = spotifyTracks[i];
+        const songData = spotifyService.convertSpotifyTrackToSong(track);
+        
+        // Create song if it doesn't exist
+        let song = await storage.getSongBySpotifyId(track.id);
+        if (!song) {
+          song = await storage.createSong(songData);
+        }
+
+        // Add to playlist
+        await storage.addSongToPlaylist({
+          playlistId: localPlaylist.id,
+          songId: song.id,
+          position: i + 1
+        });
+      }
+
+      const fullPlaylist = await storage.getPlaylistWithSongs(localPlaylist.id);
+      res.json(fullPlaylist);
+    } catch (error) {
+      console.error("Error syncing playlist:", error);
+      res.status(500).json({ message: "Failed to sync playlist" });
+    }
+  });
+
+  app.get("/api/spotify/search", async (req, res) => {
+    try {
+      const accessToken = req.headers.authorization?.replace('Bearer ', '');
+      const query = req.query.q as string;
+      
+      if (!accessToken) {
+        return res.status(401).json({ message: "No access token provided" });
+      }
+
+      if (!query) {
+        return res.status(400).json({ message: "Search query required" });
+      }
+
+      const spotifyTracks = await spotifyService.searchTracks(accessToken, query);
+      const songs = spotifyTracks.map(track => spotifyService.convertSpotifyTrackToSong(track));
+      
+      res.json(songs);
+    } catch (error) {
+      console.error("Error searching Spotify:", error);
+      res.status(500).json({ message: "Failed to search Spotify" });
     }
   });
 

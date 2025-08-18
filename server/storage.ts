@@ -34,6 +34,7 @@ export interface IStorage {
   // Songs
   getSongs(): Promise<Song[]>;
   getSong(id: number): Promise<Song | undefined>;
+  getSongBySpotifyId(spotifyId: string): Promise<Song | undefined>;
   createSong(song: InsertSong): Promise<Song>;
   searchSongs(query: string): Promise<Song[]>;
 
@@ -181,7 +182,9 @@ export class MemStorage implements IStorage {
       coverImage: playlist.coverImage || null,
       userId: playlist.userId,
       isPublic: playlist.isPublic || null,
-      createdAt: new Date()
+      createdAt: new Date(),
+      spotifyId: playlist.spotifyId || null,
+      isSpotifyLinked: playlist.isSpotifyLinked || null
     };
     this.playlists.set(newPlaylist.id, newPlaylist);
     return newPlaylist;
@@ -215,6 +218,10 @@ export class MemStorage implements IStorage {
     return this.songs.get(id);
   }
 
+  async getSongBySpotifyId(spotifyId: string): Promise<Song | undefined> {
+    return Array.from(this.songs.values()).find(song => song.spotifyId === spotifyId);
+  }
+
   async createSong(song: InsertSong): Promise<Song> {
     const newSong: Song = {
       id: this.currentSongId++,
@@ -223,7 +230,9 @@ export class MemStorage implements IStorage {
       album: song.album || null,
       duration: song.duration,
       coverImage: song.coverImage || null,
-      audioUrl: song.audioUrl || null
+      audioUrl: song.audioUrl || null,
+      spotifyId: song.spotifyId || null,
+      previewUrl: song.previewUrl || null
     };
     this.songs.set(newSong.id, newSong);
     return newSong;
