@@ -78,10 +78,13 @@ export function SpotifyConnect({ accessToken, onConnect }: SpotifyConnectProps) 
             Connect Spotify
           </Button>
         </DialogTrigger>
-        <DialogContent className="bg-listlab-gray border-gray-700">
+        <DialogContent className="bg-listlab-gray border-gray-700" aria-describedby="spotify-connect-description">
           <DialogHeader>
             <DialogTitle className="text-white">Connect to Spotify</DialogTitle>
           </DialogHeader>
+          <div id="spotify-connect-description" className="sr-only">
+            Connect your Spotify account to import playlists and access the full music catalog
+          </div>
           <div className="space-y-4">
             <p className="text-listlab-text">
               Connect your Spotify account to import your playlists and access millions of songs.
@@ -116,10 +119,13 @@ export function SpotifyConnect({ accessToken, onConnect }: SpotifyConnectProps) 
           Spotify Connected
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-listlab-gray border-gray-700 max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+      <DialogContent className="bg-listlab-gray border-gray-700 max-w-2xl max-h-[80vh] overflow-hidden flex flex-col" aria-describedby="spotify-playlists-description">
         <DialogHeader>
           <DialogTitle className="text-white">Your Spotify Playlists</DialogTitle>
         </DialogHeader>
+        <div id="spotify-playlists-description" className="sr-only">
+          View and import your Spotify playlists into ListLab
+        </div>
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="text-center py-8 text-listlab-text">Loading your playlists...</div>
