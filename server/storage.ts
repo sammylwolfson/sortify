@@ -175,8 +175,12 @@ export class MemStorage implements IStorage {
 
   async createPlaylist(playlist: InsertPlaylist & { userId: number }): Promise<Playlist> {
     const newPlaylist: Playlist = {
-      ...playlist,
       id: this.currentPlaylistId++,
+      name: playlist.name,
+      description: playlist.description || null,
+      coverImage: playlist.coverImage || null,
+      userId: playlist.userId,
+      isPublic: playlist.isPublic || null,
       createdAt: new Date()
     };
     this.playlists.set(newPlaylist.id, newPlaylist);
@@ -212,7 +216,15 @@ export class MemStorage implements IStorage {
   }
 
   async createSong(song: InsertSong): Promise<Song> {
-    const newSong: Song = { ...song, id: this.currentSongId++ };
+    const newSong: Song = {
+      id: this.currentSongId++,
+      title: song.title,
+      artist: song.artist,
+      album: song.album || null,
+      duration: song.duration,
+      coverImage: song.coverImage || null,
+      audioUrl: song.audioUrl || null
+    };
     this.songs.set(newSong.id, newSong);
     return newSong;
   }
@@ -265,7 +277,12 @@ export class MemStorage implements IStorage {
   }
 
   async createArtist(artist: InsertArtist): Promise<Artist> {
-    const newArtist: Artist = { ...artist, id: this.currentArtistId++ };
+    const newArtist: Artist = {
+      id: this.currentArtistId++,
+      name: artist.name,
+      image: artist.image || null,
+      bio: artist.bio || null
+    };
     this.artists.set(newArtist.id, newArtist);
     return newArtist;
   }

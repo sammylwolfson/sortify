@@ -20,16 +20,16 @@ export function SearchBar() {
           placeholder="Search for songs, artists, or albums..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-white text-black rounded-full py-2 px-12 focus:outline-none focus:ring-2 focus:ring-spotify-green border-0"
+          className="w-full bg-white text-black rounded-full py-2 px-12 focus:outline-none focus:ring-2 focus:ring-listlab-green border-0"
         />
         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
       </div>
       
       {/* Search Results Dropdown */}
       {searchQuery.length > 2 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-spotify-gray rounded-lg shadow-lg border border-gray-700 z-50 max-h-64 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-listlab-gray rounded-lg shadow-lg border border-gray-700 z-50 max-h-64 overflow-y-auto">
           {isLoading ? (
-            <div className="p-4 text-center spotify-text">Searching...</div>
+            <div className="p-4 text-center listlab-text">Searching...</div>
           ) : searchResults && searchResults.length > 0 ? (
             <div className="py-2">
               {searchResults.map((song: Song) => (
@@ -50,7 +50,7 @@ export function SearchBar() {
               ))}
             </div>
           ) : (
-            <div className="p-4 text-center spotify-text">No results found</div>
+            <div className="p-4 text-center listlab-text">No results found</div>
           )}
         </div>
       )}

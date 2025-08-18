@@ -28,27 +28,27 @@ export function PlaybackControls() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-spotify-gray border-t border-gray-800 px-4 py-3">
+    <div className="fixed bottom-0 left-0 right-0 bg-listlab-gray border-t border-gray-800 px-4 py-3">
       <div className="flex items-center justify-between">
         {/* Currently Playing */}
         <div className="flex items-center space-x-3 w-1/4 min-w-0">
           <div className="w-14 h-14 bg-gray-600 rounded flex-shrink-0"></div>
           <div className="min-w-0 flex-1">
             <p className="font-medium text-white truncate">{currentSong.title}</p>
-            <p className="text-sm spotify-text truncate">{currentSong.artist}</p>
+            <p className="text-sm listlab-text truncate">{currentSong.artist}</p>
           </div>
           <div className="flex items-center space-x-2 flex-shrink-0">
             <Button
               size="sm"
               variant="ghost"
-              className="text-spotify-text hover:text-white p-1"
+              className="text-listlab-text hover:text-white p-1"
             >
               <Heart className="h-4 w-4" />
             </Button>
             <Button
               size="sm"
               variant="ghost"
-              className="text-spotify-text hover:text-white p-1"
+              className="text-listlab-text hover:text-white p-1"
             >
               <ExternalLink className="h-4 w-4" />
             </Button>
@@ -61,14 +61,14 @@ export function PlaybackControls() {
             <Button
               size="sm"
               variant="ghost"
-              className="text-spotify-text hover:text-white p-1"
+              className="text-listlab-text hover:text-white p-1"
             >
               <Shuffle className="h-4 w-4" />
             </Button>
             <Button
               size="sm"
               variant="ghost"
-              className="text-spotify-text hover:text-white p-1"
+              className="text-listlab-text hover:text-white p-1"
             >
               <SkipBack className="h-4 w-4" />
             </Button>
@@ -86,14 +86,14 @@ export function PlaybackControls() {
             <Button
               size="sm"
               variant="ghost"
-              className="text-spotify-text hover:text-white p-1"
+              className="text-listlab-text hover:text-white p-1"
             >
               <SkipForward className="h-4 w-4" />
             </Button>
             <Button
               size="sm"
               variant="ghost"
-              className="text-spotify-text hover:text-white p-1"
+              className="text-listlab-text hover:text-white p-1"
             >
               <Repeat className="h-4 w-4" />
             </Button>
@@ -101,7 +101,7 @@ export function PlaybackControls() {
           
           {/* Progress Bar */}
           <div className="flex items-center space-x-2 w-full">
-            <span className="text-xs spotify-text flex-shrink-0">{currentSong.currentTime}</span>
+            <span className="text-xs listlab-text flex-shrink-0">{currentSong.currentTime}</span>
             <Slider
               value={progress}
               onValueChange={setProgress}
@@ -109,7 +109,7 @@ export function PlaybackControls() {
               step={1}
               className="flex-1"
             />
-            <span className="text-xs spotify-text flex-shrink-0">{currentSong.duration}</span>
+            <span className="text-xs listlab-text flex-shrink-0">{currentSong.duration}</span>
           </div>
         </div>
         
@@ -118,14 +118,14 @@ export function PlaybackControls() {
           <Button
             size="sm"
             variant="ghost"
-            className="text-spotify-text hover:text-white p-1"
+            className="text-listlab-text hover:text-white p-1"
           >
             <List className="h-4 w-4" />
           </Button>
           <Button
             size="sm"
             variant="ghost"
-            className="text-spotify-text hover:text-white p-1"
+            className="text-listlab-text hover:text-white p-1"
           >
             <Monitor className="h-4 w-4" />
           </Button>
@@ -133,7 +133,7 @@ export function PlaybackControls() {
             <Button
               size="sm"
               variant="ghost"
-              className="text-spotify-text hover:text-white p-1"
+              className="text-listlab-text hover:text-white p-1"
             >
               <Volume2 className="h-4 w-4" />
             </Button>

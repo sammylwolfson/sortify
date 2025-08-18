@@ -49,12 +49,12 @@ export default function Home() {
   ];
 
   return (
-    <div className="flex h-screen bg-spotify-dark text-white overflow-hidden">
+    <div className="flex h-screen bg-listlab-dark text-white overflow-hidden">
       <Sidebar onCreatePlaylist={() => setIsCreateModalOpen(true)} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Navigation */}
-        <div className="bg-spotify-gray px-8 py-4 flex items-center justify-between">
+        <div className="bg-listlab-gray px-8 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button
               size="sm"
@@ -75,7 +75,7 @@ export default function Home() {
           <SearchBar />
           
           <div className="flex items-center space-x-4">
-            <Button className="spotify-green spotify-green-hover text-black font-semibold px-6 py-2 rounded-full">
+            <Button className="listlab-green listlab-green-hover text-black font-semibold px-6 py-2 rounded-full">
               Upgrade
             </Button>
             <div className="w-8 h-8 bg-gray-600 rounded-full"></div>
@@ -89,7 +89,7 @@ export default function Home() {
               <h1 className="text-3xl font-bold">Your Playlists</h1>
               <Button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="spotify-green spotify-green-hover text-black font-semibold px-6 py-3 rounded-full flex items-center space-x-2"
+                className="listlab-green listlab-green-hover text-black font-semibold px-6 py-3 rounded-full flex items-center space-x-2"
               >
                 <Plus className="h-4 w-4" />
                 <span>Create Playlist</span>
@@ -101,7 +101,7 @@ export default function Home() {
               {playlistsLoading ? (
                 Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="animate-pulse">
-                    <div className="bg-spotify-light-gray rounded-lg p-4">
+                    <div className="bg-listlab-light-gray rounded-lg p-4">
                       <div className="aspect-square bg-gray-600 rounded-lg mb-4"></div>
                       <div className="h-4 bg-gray-600 rounded mb-2"></div>
                       <div className="h-3 bg-gray-600 rounded w-3/4"></div>
@@ -109,9 +109,9 @@ export default function Home() {
                   </div>
                 ))
               ) : (
-                playlists?.map((playlist: Playlist) => (
+                playlists && Array.isArray(playlists) ? playlists.map((playlist: Playlist) => (
                   <PlaylistCard key={playlist.id} playlist={playlist} />
-                ))
+                )) : null
               )}
             </div>
             
@@ -122,7 +122,7 @@ export default function Home() {
                 {artistsLoading ? (
                   Array.from({ length: 6 }).map((_, i) => (
                     <div key={i} className="animate-pulse">
-                      <div className="bg-spotify-light-gray rounded-lg p-4 text-center">
+                      <div className="bg-listlab-light-gray rounded-lg p-4 text-center">
                         <div className="aspect-square bg-gray-600 rounded-full mb-4"></div>
                         <div className="h-4 bg-gray-600 rounded mb-2"></div>
                         <div className="h-3 bg-gray-600 rounded w-1/2 mx-auto"></div>
@@ -130,9 +130,9 @@ export default function Home() {
                     </div>
                   ))
                 ) : (
-                  artists?.map((artist: Artist) => (
+                  artists && Array.isArray(artists) ? artists.map((artist: Artist) => (
                     <ArtistCard key={artist.id} artist={artist} />
-                  ))
+                  )) : null
                 )}
               </div>
             </div>
@@ -149,7 +149,7 @@ export default function Home() {
                       className="w-full aspect-video object-cover rounded-lg shadow-lg mb-4"
                     />
                     <h3 className="font-semibold text-white mb-1">{item.name}</h3>
-                    <p className="text-sm spotify-text">{item.description}</p>
+                    <p className="text-sm listlab-text">{item.description}</p>
                   </div>
                 ))}
               </div>

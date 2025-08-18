@@ -24,15 +24,15 @@
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
   
-  /* Spotify-specific colors */
-  --spotify-green: hsl(142, 76%, 36%);
-  --spotify-green-hover: hsl(142, 76%, 41%);
-  --spotify-dark: hsl(0, 0%, 7%);
-  --spotify-gray: hsl(0, 0%, 9%);
-  --spotify-light-gray: hsl(0, 0%, 16%);
-  --spotify-text: hsl(0, 0%, 70%);
-  --spotify-white: hsl(0, 0%, 100%);
-  --spotify-black: hsl(0, 0%, 0%);
+  /* ListLab-specific colors */
+  --listlab-green: hsl(142, 76%, 36%);
+  --listlab-green-hover: hsl(142, 76%, 41%);
+  --listlab-dark: hsl(0, 0%, 7%);
+  --listlab-gray: hsl(0, 0%, 9%);
+  --listlab-light-gray: hsl(0, 0%, 16%);
+  --listlab-text: hsl(0, 0%, 70%);
+  --listlab-white: hsl(0, 0%, 100%);
+  --listlab-black: hsl(0, 0%, 0%);
 }
 
 .dark {
@@ -65,8 +65,8 @@
 
   body {
     @apply font-sans antialiased;
-    background-color: var(--spotify-dark);
-    color: var(--spotify-white);
+    background-color: var(--listlab-dark);
+    color: var(--listlab-white);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
   
@@ -84,7 +84,7 @@
   }
   
   .playlist-card:hover {
-    background-color: var(--spotify-light-gray);
+    background-color: var(--listlab-light-gray);
   }
   
   .play-button {
@@ -102,35 +102,35 @@
 }
 
 @layer utilities {
-  .spotify-green {
-    background-color: var(--spotify-green);
+  .listlab-green {
+    background-color: var(--listlab-green);
   }
   
-  .spotify-green-hover:hover {
-    background-color: var(--spotify-green-hover);
+  .listlab-green-hover:hover {
+    background-color: var(--listlab-green-hover);
   }
   
-  .spotify-dark {
-    background-color: var(--spotify-dark);
+  .listlab-dark {
+    background-color: var(--listlab-dark);
   }
   
-  .spotify-gray {
-    background-color: var(--spotify-gray);
+  .listlab-gray {
+    background-color: var(--listlab-gray);
   }
   
-  .spotify-light-gray {
-    background-color: var(--spotify-light-gray);
+  .listlab-light-gray {
+    background-color: var(--listlab-light-gray);
   }
   
-  .spotify-text {
-    color: var(--spotify-text);
+  .listlab-text {
+    color: var(--listlab-text);
   }
   
-  .spotify-white {
-    color: var(--spotify-white);
+  .listlab-white {
+    color: var(--listlab-white);
   }
   
-  .spotify-black {
-    color: var(--spotify-black);
+  .listlab-black {
+    color: var(--listlab-black);
   }
 }

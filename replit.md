@@ -1,8 +1,8 @@
-# Spotify Clone Web Application
+# ListLab - Playlist Management Web Application
 
 ## Overview
 
-This is a modern music streaming web application built with React, Express, and PostgreSQL. The application mimics Spotify's interface and functionality, allowing users to create playlists, manage songs, and browse music content. It features a dark theme design with Spotify's signature green accent colors.
+This is a modern playlist management web application called "ListLab" built with React, Express, and in-memory storage. The application maintains Spotify's visual interface and design aesthetics while being branded as ListLab, allowing users to create playlists, manage songs, and browse music content. It features a dark theme design with ListLab's green accent colors.
 
 ## System Architecture
 
@@ -44,7 +44,7 @@ The application uses five main tables:
 - `GET /api/artists` - Browse artists
 
 ### UI Components
-- **Sidebar**: Navigation with Spotify logo and menu items
+- **Sidebar**: Navigation with ListLab logo and menu items
 - **PlaylistCard**: Grid display of playlists with hover effects
 - **SongList**: Table view of songs with playback controls
 - **SearchBar**: Real-time search with dropdown results
@@ -97,6 +97,8 @@ The application uses five main tables:
 ```
 Changelog:
 - July 01, 2025. Initial setup
+- August 18, 2025. Complete rebranding from "Spotify" to "ListLab" across all components, styling, and branding elements
+- August 18, 2025. Application ready for GitHub repository migration
 ```
 
 ## User Preferences

@@ -13,7 +13,7 @@ export function ArtistCard({ artist }: ArtistCardProps) {
         className="w-full aspect-square object-cover rounded-full shadow-lg mb-4"
       />
       <h3 className="font-semibold text-white mb-1 truncate">{artist.name}</h3>
-      <p className="text-sm spotify-text">Artist</p>
+      <p className="text-sm listlab-text">Artist</p>
     </div>
   );
 }

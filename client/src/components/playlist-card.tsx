@@ -34,13 +34,13 @@ export function PlaylistCard({ playlist }: PlaylistCardProps) {
         <Button
           size="sm"
           onClick={handlePlayClick}
-          className="play-button absolute bottom-2 right-2 w-12 h-12 spotify-green hover:scale-105 transition-all shadow-lg rounded-full p-0"
+          className="play-button absolute bottom-2 right-2 w-12 h-12 listlab-green hover:scale-105 transition-all shadow-lg rounded-full p-0"
         >
           <Play className="h-5 w-5 text-black ml-1" fill="currentColor" />
         </Button>
       </div>
       <h3 className="font-semibold text-white mb-1 truncate">{playlist.name}</h3>
-      <p className="text-sm spotify-text truncate">
+      <p className="text-sm listlab-text truncate">
         {playlist.description || "Created by you"}
       </p>
     </div>

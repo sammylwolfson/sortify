@@ -1,8 +1,7 @@
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Home, Search, Library, Plus, Heart } from "lucide-react";
-import { SiSpotify } from "react-icons/si";
+import { Home, Search, Library, Plus, Heart, List } from "lucide-react";
 import type { Playlist } from "@shared/schema";
 
 interface SidebarProps {
@@ -21,15 +20,15 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
       {/* Logo and Main Navigation */}
       <div className="p-6">
         <div className="flex items-center space-x-2 mb-8">
-          <SiSpotify className="text-3xl text-spotify-green" />
-          <span className="text-xl font-bold">Spotify</span>
+          <List className="text-3xl text-listlab-green" />
+          <span className="text-xl font-bold">ListLab</span>
         </div>
         
         <nav className="space-y-4">
           <Button
             variant="ghost"
             className={`w-full justify-start space-x-3 p-3 h-auto ${
-              location === "/" ? "text-white" : "text-spotify-text hover:text-white"
+              location === "/" ? "text-white" : "text-listlab-text hover:text-white"
             }`}
             onClick={() => setLocation("/")}
           >
@@ -38,14 +37,14 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
           </Button>
           <Button
             variant="ghost"
-            className="w-full justify-start space-x-3 p-3 h-auto text-spotify-text hover:text-white"
+            className="w-full justify-start space-x-3 p-3 h-auto text-listlab-text hover:text-white"
           >
             <Search className="h-5 w-5" />
             <span className="font-medium">Search</span>
           </Button>
           <Button
             variant="ghost"
-            className="w-full justify-start space-x-3 p-3 h-auto text-spotify-text hover:text-white"
+            className="w-full justify-start space-x-3 p-3 h-auto text-listlab-text hover:text-white"
           >
             <Library className="h-5 w-5" />
             <span className="font-medium">Your Library</span>
@@ -58,14 +57,14 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
         <Button
           variant="ghost"
           onClick={onCreatePlaylist}
-          className="w-full justify-start space-x-3 p-3 h-auto text-spotify-text hover:text-white mb-4"
+          className="w-full justify-start space-x-3 p-3 h-auto text-listlab-text hover:text-white mb-4"
         >
           <Plus className="h-5 w-5" />
           <span className="font-medium">Create Playlist</span>
         </Button>
         <Button
           variant="ghost"
-          className="w-full justify-start space-x-3 p-3 h-auto text-spotify-text hover:text-white"
+          className="w-full justify-start space-x-3 p-3 h-auto text-listlab-text hover:text-white"
         >
           <Heart className="h-5 w-5" />
           <span className="font-medium">Liked Songs</span>
@@ -75,7 +74,7 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
       {/* Playlists List */}
       <div className="flex-1 px-6 overflow-y-auto scrollbar-hide">
         <div className="space-y-2">
-          {playlists?.map((playlist: Playlist) => (
+          {playlists && Array.isArray(playlists) ? playlists.map((playlist: Playlist) => (
             <Button
               key={playlist.id}
               variant="ghost"
@@ -83,12 +82,12 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
               className={`w-full justify-start p-2 h-auto text-left ${
                 location === `/playlist/${playlist.id}` 
                   ? "text-white" 
-                  : "text-spotify-text hover:text-white"
+                  : "text-listlab-text hover:text-white"
               }`}
             >
               <span className="truncate">{playlist.name}</span>
             </Button>
-          ))}
+          )) : null}
         </div>
       </div>
     </div>

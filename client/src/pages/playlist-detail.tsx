@@ -1,15 +1,18 @@
+import { useState } from "react";
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Sidebar } from "@/components/sidebar";
 import { SongList } from "@/components/song-list";
 import { PlaybackControls } from "@/components/playback-controls";
 import { SearchBar } from "@/components/search-bar";
+import { AddSongModal } from "@/components/add-song-modal";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Play, MoreHorizontal, Heart } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, MoreHorizontal, Heart, Plus } from "lucide-react";
 import type { PlaylistWithSongs } from "@shared/schema";
 
 export default function PlaylistDetail() {
   const { id } = useParams<{ id: string }>();
+  const [isAddSongModalOpen, setIsAddSongModalOpen] = useState(false);
   
   const { data: playlist, isLoading } = useQuery({
     queryKey: ["/api/playlists", id],
