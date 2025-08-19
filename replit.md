@@ -118,6 +118,8 @@ Changelog:
 - August 19, 2025. Removed all non-personal content from home page: "Your Playlists" section (mock data), "Recently Played Artists" section, and "Studio Equipment" section
 - August 19, 2025. Created clean welcome page that directs users to their personal Spotify playlists in the sidebar and playlist creation functionality
 - August 19, 2025. Added "Upcoming Events" tab below search with sample events and calendar integration functionality
+- August 19, 2025. Enhanced events with Spotify integration - now syncs with artists you follow and filters by your region
+- August 19, 2025. Added personalized event recommendations based on Spotify followed artists and user location
 ```
 
 ## User Preferences

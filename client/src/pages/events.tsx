@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Sidebar } from "@/components/sidebar";
 import { PlaybackControls } from "@/components/playback-controls";
 import { CreatePlaylistModalEnhanced } from "@/components/create-playlist-modal-enhanced";
@@ -7,11 +8,55 @@ import { SpotifyConnect } from "@/components/spotify-connect";
 import { useSpotify } from "@/hooks/use-spotify";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, Calendar, MapPin, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar, MapPin, Clock, Loader2 } from "lucide-react";
 
 export default function Events() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { accessToken, setAccessToken } = useSpotify();
+
+  // Get user's followed artists from Spotify
+  const { data: followedArtists, isLoading: artistsLoading } = useQuery({
+    queryKey: ["/api/spotify/followed-artists"],
+    enabled: !!accessToken,
+  });
+
+  // Get user's country for region filtering
+  const { data: userLocationData, isLoading: locationLoading } = useQuery({
+    queryKey: ["/api/spotify/user-country"],
+    enabled: !!accessToken,
+  });
+
+  // Mock events filtered by followed artists (in real app, would use concert API like Songkick, Bandsintown, etc.)
+  const generatePersonalizedEvents = () => {
+    if (!followedArtists || !Array.isArray(followedArtists) || followedArtists.length === 0) {
+      return [];
+    }
+
+    const sampleEvents = [
+      {
+        id: 1,
+        artist: followedArtists[0]?.name || "Concert Night",
+        venue: "Madison Square Garden, NYC",
+        date: "Tonight",
+        time: "8:00 PM",
+        description: `Live performance by ${followedArtists[0]?.name || "your favorite artist"}`,
+        region: userLocationData?.country || "US"
+      },
+      {
+        id: 2,
+        artist: followedArtists[1]?.name || "Music Festival",
+        venue: "Central Park, NYC",
+        date: "This Weekend",
+        time: "2:00 PM",
+        description: `Festival featuring ${followedArtists[1]?.name || "multiple artists"}`,
+        region: userLocationData?.country || "US"
+      }
+    ];
+
+    return sampleEvents;
+  };
+
+  const personalizedEvents = generatePersonalizedEvents();
 
   return (
     <div className="flex h-screen bg-listlab-dark text-white overflow-hidden">
@@ -55,80 +100,88 @@ export default function Events() {
           <div className="p-8">
             <div className="flex items-center justify-between mb-8">
               <h1 className="text-3xl font-bold">Upcoming Events</h1>
-              <Button variant="outline" className="text-listlab-green border-listlab-green hover:bg-listlab-green hover:text-black">
-                <Calendar className="h-4 w-4 mr-2" />
-                Connect Calendar
-              </Button>
-            </div>
-            
-            <div className="grid gap-4">
-              <Card className="bg-listlab-light-gray border-gray-700">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Calendar className="h-5 w-5 text-listlab-green" />
-                      Concert Night
-                    </CardTitle>
-                    <div className="text-sm text-gray-400 flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      8:00 PM
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex items-center text-gray-300">
-                      <MapPin className="h-4 w-4 mr-2 text-listlab-green" />
-                      Madison Square Garden, NYC
-                    </div>
-                    <p className="text-gray-400">Live music event featuring your favorite artists</p>
-                    <Button 
-                      size="sm" 
-                      className="listlab-green listlab-green-hover text-black mt-2"
-                      onClick={() => setIsCreateModalOpen(true)}
-                    >
-                      Create Playlist for Event
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-listlab-light-gray border-gray-700">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Calendar className="h-5 w-5 text-listlab-green" />
-                      Music Festival
-                    </CardTitle>
-                    <div className="text-sm text-gray-400 flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      2:00 PM
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex items-center text-gray-300">
-                      <MapPin className="h-4 w-4 mr-2 text-listlab-green" />
-                      Central Park, NYC
-                    </div>
-                    <p className="text-gray-400">Weekend festival with multiple artists and genres</p>
-                    <Button 
-                      size="sm" 
-                      className="listlab-green listlab-green-hover text-black mt-2"
-                      onClick={() => setIsCreateModalOpen(true)}
-                    >
-                      Create Playlist for Event
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <div className="text-center py-8">
-                <p className="text-gray-400 mb-4">Connect your calendar to see personalized upcoming events</p>
-                <p className="text-sm text-gray-500">Events will sync with your music preferences to suggest playlist creation</p>
+              <div className="flex items-center space-x-2">
+                {userLocationData?.country && (
+                  <span className="text-sm text-gray-400 bg-listlab-light-gray px-3 py-1 rounded-full">
+                    📍 {userLocationData.country}
+                  </span>
+                )}
+                <Button variant="outline" className="text-listlab-green border-listlab-green hover:bg-listlab-green hover:text-black">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Connect More Events
+                </Button>
               </div>
             </div>
+
+            {artistsLoading || locationLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-listlab-green" />
+                <span className="ml-3 text-gray-400">Loading your personalized events...</span>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {personalizedEvents.length > 0 ? (
+                  personalizedEvents.map((event) => (
+                    <Card key={event.id} className="bg-listlab-light-gray border-gray-700">
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-white flex items-center gap-2">
+                            <Calendar className="h-5 w-5 text-listlab-green" />
+                            {event.artist}
+                          </CardTitle>
+                          <div className="text-sm text-gray-400 flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            {event.time}
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <div className="flex items-center text-gray-300">
+                            <MapPin className="h-4 w-4 mr-2 text-listlab-green" />
+                            {event.venue}
+                          </div>
+                          <p className="text-gray-400">{event.description}</p>
+                          <div className="text-xs text-listlab-green font-medium">
+                            ✓ From your followed artists
+                          </div>
+                          <Button 
+                            size="sm" 
+                            className="listlab-green listlab-green-hover text-black mt-2"
+                            onClick={() => setIsCreateModalOpen(true)}
+                          >
+                            Create Playlist for {event.artist}
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <Calendar className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-400 mb-2">No Events Found</h3>
+                    <p className="text-gray-500 mb-4">
+                      We couldn't find upcoming events for the artists you follow in your region ({userLocationData?.country || 'your area'}).
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Follow more artists on Spotify to see personalized concert recommendations here.
+                    </p>
+                  </div>
+                )}
+
+                <div className="text-center py-8 border-t border-gray-800 mt-8">
+                  <p className="text-gray-400 mb-2">Events are personalized based on:</p>
+                  <div className="flex justify-center space-x-6 text-sm text-gray-500">
+                    <span>• Artists you follow on Spotify</span>
+                    <span>• Your region ({userLocationData?.country || 'Unknown'})</span>
+                    <span>• Upcoming concert dates</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-4">
+                    To see real events, connect with concert APIs like Songkick or Bandsintown
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -147,6 +147,38 @@ export class SpotifyService {
     return data.items;
   }
 
+  // Get user's followed artists
+  async getFollowedArtists(accessToken: string): Promise<any[]> {
+    const response = await fetch('https://api.spotify.com/v1/me/following?type=artist&limit=50', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get followed artists');
+    }
+
+    const data = await response.json();
+    return data.artists?.items || [];
+  }
+
+  // Get user's current country/region from profile
+  async getUserCountry(accessToken: string): Promise<string> {
+    const response = await fetch('https://api.spotify.com/v1/me', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get user profile');
+    }
+
+    const data = await response.json();
+    return data.country || 'US'; // Default to US if country not available
+  }
+
   // Get detailed playlist information with tracks
   async getPlaylistDetails(accessToken: string, playlistId: string) {
     const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
