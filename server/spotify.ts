@@ -179,6 +179,94 @@ export class SpotifyService {
     return data.country || 'US'; // Default to US if country not available
   }
 
+  // Get recommended artists based on user's followed artists and top tracks
+  async getRecommendedArtists(accessToken: string): Promise<any[]> {
+    try {
+      // First get user's top artists as seed
+      const topArtistsResponse = await fetch('https://api.spotify.com/v1/me/top/artists?limit=5&time_range=medium_term', {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+
+      let seedArtists: string[] = [];
+      if (topArtistsResponse.ok) {
+        const topArtistsData = await topArtistsResponse.json();
+        seedArtists = topArtistsData.items.slice(0, 3).map((artist: any) => artist.id);
+      }
+
+      // If no top artists, get followed artists as seed
+      if (seedArtists.length === 0) {
+        try {
+          const followedArtists = await this.getFollowedArtists(accessToken);
+          seedArtists = followedArtists.slice(0, 3).map((artist: any) => artist.id);
+        } catch (error) {
+          // If both fail, use some popular seed artists
+          seedArtists = ['4NHQUGzhtTLFvgF5SZesLK', '1dfeR4HaWDbWqFHLkxsg1d', '06HL4z0CvFAxyc27GXpf02']; // Tessa Violet, Queen, Beethoven
+        }
+      }
+
+      if (seedArtists.length === 0) {
+        return [];
+      }
+
+      // Get recommendations based on seed artists
+      const params = new URLSearchParams({
+        seed_artists: seedArtists.join(','),
+        limit: '10'
+      });
+
+      const recommendationsResponse = await fetch(`https://api.spotify.com/v1/recommendations?${params.toString()}`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+
+      if (!recommendationsResponse.ok) {
+        throw new Error('Failed to get recommendations');
+      }
+
+      const recommendationsData = await recommendationsResponse.json();
+      
+      // Extract unique artists from recommended tracks
+      const artistIds = new Set<string>();
+      const artistsMap = new Map<string, any>();
+
+      recommendationsData.tracks.forEach((track: any) => {
+        track.artists.forEach((artist: any) => {
+          if (!artistIds.has(artist.id)) {
+            artistIds.add(artist.id);
+            artistsMap.set(artist.id, artist);
+          }
+        });
+      });
+
+      // Get detailed artist info for the recommended artists
+      const artistList = Array.from(artistsMap.values()).slice(0, 8);
+      
+      // Get full artist details
+      const artistDetails = await Promise.all(
+        artistList.map(async (artist) => {
+          try {
+            const artistResponse = await fetch(`https://api.spotify.com/v1/artists/${artist.id}`, {
+              headers: {
+                'Authorization': `Bearer ${accessToken}`
+              }
+            });
+            return artistResponse.ok ? await artistResponse.json() : artist;
+          } catch {
+            return artist;
+          }
+        })
+      );
+
+      return artistDetails;
+    } catch (error) {
+      console.error('Error getting recommended artists:', error);
+      return [];
+    }
+  }
+
   // Get detailed playlist information with tracks
   async getPlaylistDetails(accessToken: string, playlistId: string) {
     const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {

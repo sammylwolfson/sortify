@@ -317,6 +317,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get recommended artists
+  app.get("/api/spotify/recommended-artists", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).json({ message: "No access token provided" });
+      }
+
+      const accessToken = authHeader.replace("Bearer ", "");
+      const artists = await spotifyService.getRecommendedArtists(accessToken);
+      res.json(artists);
+    } catch (error) {
+      console.error("Failed to fetch recommended artists:", error);
+      res.status(500).json({ message: "Failed to fetch recommended artists" });
+    }
+  });
+
   app.post("/api/spotify/sync-playlist/:spotifyId", async (req, res) => {
     try {
       const accessToken = req.headers.authorization?.replace('Bearer ', '');

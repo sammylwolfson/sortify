@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Home, Search, Library, Plus, Heart, List, Music, Calendar } from "lucide-react";
+import { Home, Search, Library, Plus, Heart, List, Music, Calendar, Users } from "lucide-react";
 import type { Playlist } from "@shared/schema";
 import { useSpotify } from "@/hooks/use-spotify";
 
@@ -49,13 +49,7 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
             <Search className="h-5 w-5" />
             <span className="font-medium">Search</span>
           </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start space-x-3 p-3 h-auto text-listlab-text hover:text-white"
-          >
-            <Library className="h-5 w-5" />
-            <span className="font-medium">Your Library</span>
-          </Button>
+
           <Button
             variant="ghost"
             className={`w-full justify-start space-x-3 p-3 h-auto ${
@@ -65,6 +59,16 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
           >
             <Calendar className="h-5 w-5" />
             <span className="font-medium">Upcoming Events</span>
+          </Button>
+          <Button
+            variant="ghost"
+            className={`w-full justify-start space-x-3 p-3 h-auto ${
+              location === "/recommended-artists" ? "text-white" : "text-listlab-text hover:text-white"
+            }`}
+            onClick={() => setLocation("/recommended-artists")}
+          >
+            <Users className="h-5 w-5" />
+            <span className="font-medium">Recommended Artists</span>
           </Button>
         </nav>
       </div>
@@ -78,6 +82,13 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
         >
           <Plus className="h-5 w-5" />
           <span className="font-medium">Create Playlist</span>
+        </Button>
+        <Button
+          variant="ghost"
+          className="w-full justify-start space-x-3 p-3 h-auto text-listlab-text hover:text-white mb-4"
+        >
+          <Library className="h-5 w-5" />
+          <span className="font-medium">Your Library</span>
         </Button>
         <Button
           variant="ghost"

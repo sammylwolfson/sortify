@@ -120,6 +120,9 @@ Changelog:
 - August 19, 2025. Added "Upcoming Events" tab below search with sample events and calendar integration functionality
 - August 19, 2025. Enhanced events with Spotify integration - now syncs with artists you follow and filters by your region
 - August 19, 2025. Added personalized event recommendations based on Spotify followed artists and user location
+- August 19, 2025. Added "Recommended Artists" tab below "Upcoming Events" with personalized artist discovery based on listening history
+- August 19, 2025. Moved "Your Library" above "Liked Songs" in sidebar and added artist recommendation algorithm using Spotify's recommendation API
+- August 19, 2025. Implemented follow/unfollow artist functionality with real-time updates and filtered recommendations to exclude already followed artists
 ```
 
 ## User Preferences
