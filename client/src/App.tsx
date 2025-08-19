@@ -13,7 +13,7 @@ import { useEffect } from "react";
 function AuthenticatedRouter() {
   const { accessToken, isConnected } = useSpotify();
 
-  // Authentication check happens automatically via useSpotify hook
+  console.log('AuthenticatedRouter - Auth state:', { accessToken: !!accessToken, isConnected });
 
   // Always show login page if not connected to Spotify
   if (!isConnected || !accessToken) {

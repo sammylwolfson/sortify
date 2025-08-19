@@ -1,9 +1,16 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { List, Music } from "lucide-react";
+import { List, Music, Loader2 } from "lucide-react";
+import { useSpotify } from "@/hooks/use-spotify";
 
 export default function Login() {
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const { setAccessToken } = useSpotify();
+
   const handleSpotifyLogin = () => {
+    setIsLoggingIn(true);
+    
     // Clear any existing tokens to force fresh login
     localStorage.removeItem('spotify_access_token');
     localStorage.removeItem('spotify_user_name');
@@ -20,9 +27,22 @@ export default function Login() {
       if (event.origin !== window.location.origin) return;
       
       if (event.data.type === 'SPOTIFY_AUTH_SUCCESS') {
+        console.log('Authentication successful:', event.data);
         authWindow?.close();
-        // Force page reload to update auth state
-        window.location.reload();
+        
+        // Set the access token in context
+        setAccessToken(event.data.token);
+        
+        // Clean up
+        window.removeEventListener('message', handleMessage);
+        setIsLoggingIn(false);
+      }
+      
+      if (event.data.type === 'SPOTIFY_AUTH_ERROR') {
+        console.error('Authentication failed:', event.data.error);
+        authWindow?.close();
+        window.removeEventListener('message', handleMessage);
+        setIsLoggingIn(false);
       }
     };
 
@@ -33,6 +53,7 @@ export default function Login() {
       if (authWindow?.closed) {
         window.removeEventListener('message', handleMessage);
         clearInterval(checkClosed);
+        setIsLoggingIn(false);
       }
     }, 1000);
   };
@@ -53,11 +74,21 @@ export default function Login() {
         <CardContent className="space-y-4">
           <Button 
             onClick={handleSpotifyLogin}
+            disabled={isLoggingIn}
             className="w-full bg-listlab-green hover:bg-listlab-green/90 text-black font-semibold py-3"
             size="lg"
           >
-            <Music className="h-5 w-5 mr-2" />
-            Login with Spotify
+            {isLoggingIn ? (
+              <>
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                Logging in...
+              </>
+            ) : (
+              <>
+                <Music className="h-5 w-5 mr-2" />
+                Login with Spotify
+              </>
+            )}
           </Button>
           <p className="text-xs text-listlab-text text-center">
             By continuing, you agree to connect your Spotify account to access and manage your music library.
