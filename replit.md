@@ -117,6 +117,7 @@ Changelog:
 - August 19, 2025. Web application transformation complete - full login-required experience with advanced playlist management
 - August 19, 2025. Removed all non-personal content from home page: "Your Playlists" section (mock data), "Recently Played Artists" section, and "Studio Equipment" section
 - August 19, 2025. Created clean welcome page that directs users to their personal Spotify playlists in the sidebar and playlist creation functionality
+- August 19, 2025. Added "Upcoming Events" tab below search with sample events and calendar integration functionality
 ```
 
 ## User Preferences
