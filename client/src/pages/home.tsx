@@ -4,7 +4,7 @@ import { Sidebar } from "@/components/sidebar";
 import { PlaylistCard } from "@/components/playlist-card";
 import { ArtistCard } from "@/components/artist-card";
 import { PlaybackControls } from "@/components/playback-controls";
-import { CreatePlaylistModal } from "@/components/create-playlist-modal";
+import { CreatePlaylistModalEnhanced } from "@/components/create-playlist-modal-enhanced";
 import { SearchBar } from "@/components/search-bar";
 import { SpotifyConnect } from "@/components/spotify-connect";
 import { useSpotify } from "@/hooks/use-spotify";
@@ -53,9 +53,11 @@ export default function Home() {
 
   return (
     <div className="flex h-screen bg-listlab-dark text-white overflow-hidden">
-      <Sidebar onCreatePlaylist={() => setIsCreateModalOpen(true)} />
+      <div className="w-60 flex-shrink-0 fixed h-full z-10">
+        <Sidebar onCreatePlaylist={() => setIsCreateModalOpen(true)} />
+      </div>
       
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 ml-60 flex flex-col overflow-hidden">
         {/* Top Navigation */}
         <div className="bg-listlab-gray px-8 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -163,9 +165,9 @@ export default function Home() {
       </div>
       
       <PlaybackControls />
-      <CreatePlaylistModal 
-        isOpen={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)} 
+      <CreatePlaylistModalEnhanced 
+        open={isCreateModalOpen} 
+        onOpenChange={setIsCreateModalOpen} 
       />
     </div>
   );
