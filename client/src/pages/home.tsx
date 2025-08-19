@@ -4,13 +4,48 @@ import { PlaybackControls } from "@/components/playback-controls";
 import { CreatePlaylistModalEnhanced } from "@/components/create-playlist-modal-enhanced";
 import { SearchBar } from "@/components/search-bar";
 import { SpotifyConnect } from "@/components/spotify-connect";
+import { TokenExpiredNotice } from "@/components/token-expired-notice";
 import { useSpotify } from "@/hooks/use-spotify";
 import { Button } from "@/components/ui/button";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Home() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { accessToken, setAccessToken } = useSpotify();
+  const { accessToken, setAccessToken, isConnected } = useSpotify();
+
+  const handleReconnect = () => {
+    // Open Spotify auth in a new window
+    const authWindow = window.open(
+      "/auth/spotify",
+      "spotify-auth",
+      "width=600,height=700,scrollbars=yes,resizable=yes"
+    );
+
+    // Listen for the auth completion
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      
+      if (event.data.type === 'SPOTIFY_AUTH_SUCCESS') {
+        setAccessToken(event.data.accessToken);
+        authWindow?.close();
+        window.removeEventListener('message', handleMessage);
+      } else if (event.data.type === 'SPOTIFY_AUTH_ERROR') {
+        console.error('Spotify auth error:', event.data.error);
+        authWindow?.close();
+        window.removeEventListener('message', handleMessage);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    // Close the window if it's closed manually
+    const checkClosed = setInterval(() => {
+      if (authWindow?.closed) {
+        window.removeEventListener('message', handleMessage);
+        clearInterval(checkClosed);
+      }
+    }, 1000);
+  };
 
   return (
     <div className="flex h-screen bg-listlab-dark text-white overflow-hidden">
@@ -52,6 +87,9 @@ export default function Home() {
         {/* Main Content Area */}
         <div className="flex-1 overflow-y-auto scrollbar-hide">
           <div className="p-8">
+            {!isConnected && (
+              <TokenExpiredNotice onReconnect={handleReconnect} />
+            )}
             <div className="text-center py-20">
               <h1 className="text-4xl font-bold mb-4">Welcome to ListLab</h1>
               <p className="text-xl text-gray-400 mb-8">Your personal playlist management studio</p>

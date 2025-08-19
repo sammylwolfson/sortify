@@ -4,6 +4,7 @@ interface SpotifyContextType {
   accessToken: string | null;
   setAccessToken: (token: string | null) => void;
   isConnected: boolean;
+  forceReconnect: () => void;
 }
 
 const SpotifyContext = createContext<SpotifyContextType | undefined>(undefined);
@@ -11,11 +12,40 @@ const SpotifyContext = createContext<SpotifyContextType | undefined>(undefined);
 export function SpotifyProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
+  // Function to validate token by making a test API call
+  const validateToken = async (token: string): Promise<boolean> => {
+    try {
+      const response = await fetch('https://api.spotify.com/v1/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  // Function to clear expired token and force re-authentication
+  const forceReconnect = () => {
+    localStorage.removeItem('spotify_access_token');
+    localStorage.removeItem('spotify_user_name');
+    setAccessToken(null);
+  };
+
   useEffect(() => {
     // Check if there's a stored token in localStorage
     const storedToken = localStorage.getItem('spotify_access_token');
     if (storedToken) {
-      setAccessToken(storedToken);
+      // Validate the stored token
+      validateToken(storedToken).then(isValid => {
+        if (isValid) {
+          setAccessToken(storedToken);
+        } else {
+          // Token is invalid/expired, clear it
+          forceReconnect();
+        }
+      });
     }
 
     // Check if we're coming back from Spotify auth
@@ -54,7 +84,8 @@ export function SpotifyProvider({ children }: { children: ReactNode }) {
     <SpotifyContext.Provider value={{
       accessToken,
       setAccessToken: handleSetAccessToken,
-      isConnected: !!accessToken
+      isConnected: !!accessToken,
+      forceReconnect
     }}>
       {children}
     </SpotifyContext.Provider>

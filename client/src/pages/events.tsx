@@ -5,6 +5,7 @@ import { PlaybackControls } from "@/components/playback-controls";
 import { CreatePlaylistModalEnhanced } from "@/components/create-playlist-modal-enhanced";
 import { SearchBar } from "@/components/search-bar";
 import { SpotifyConnect } from "@/components/spotify-connect";
+import { TokenExpiredNotice } from "@/components/token-expired-notice";
 import { useSpotify } from "@/hooks/use-spotify";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +13,20 @@ import { ChevronLeft, ChevronRight, Calendar, MapPin, Clock, Loader2 } from "luc
 
 export default function Events() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { accessToken, setAccessToken } = useSpotify();
+  const { accessToken, setAccessToken, isConnected } = useSpotify();
+
+  const handleReconnect = () => {
+    const authWindow = window.open("/auth/spotify", "spotify-auth", "width=600,height=700,scrollbars=yes,resizable=yes");
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data.type === 'SPOTIFY_AUTH_SUCCESS') {
+        setAccessToken(event.data.accessToken);
+        authWindow?.close();
+        window.removeEventListener('message', handleMessage);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+  };
 
   // Get user's followed artists from Spotify
   const { data: followedArtists, isLoading: artistsLoading } = useQuery({
@@ -98,6 +112,9 @@ export default function Events() {
         {/* Main Content Area */}
         <div className="flex-1 overflow-y-auto scrollbar-hide">
           <div className="p-8">
+            {!isConnected && (
+              <TokenExpiredNotice onReconnect={handleReconnect} />
+            )}
             <div className="flex items-center justify-between mb-8">
               <h1 className="text-3xl font-bold">Upcoming Events</h1>
               <div className="flex items-center space-x-2">
