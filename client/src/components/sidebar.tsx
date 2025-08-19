@@ -92,9 +92,12 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
         </Button>
         <Button
           variant="ghost"
-          className="w-full justify-start space-x-3 p-3 h-auto text-listlab-text hover:text-white"
+          onClick={() => setLocation("/liked-songs")}
+          className={`w-full justify-start space-x-3 p-3 h-auto ${
+            location === "/liked-songs" ? "text-white" : "text-listlab-text hover:text-white"
+          }`}
         >
-          <Heart className="h-5 w-5" />
+          <Heart className="h-5 w-5 fill-current" />
           <span className="font-medium">Liked Songs</span>
         </Button>
       </div>

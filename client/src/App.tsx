@@ -7,6 +7,7 @@ import { SpotifyProvider, useSpotify } from "@/hooks/use-spotify";
 import Home from "@/pages/home";
 import Events from "@/pages/events";
 import RecommendedArtists from "@/pages/recommended-artists";
+import LikedSongs from "@/pages/liked-songs";
 import PlaylistDetail from "@/pages/playlist-detail";
 import { SpotifyPlaylistDetail } from "@/pages/spotify-playlist-detail";
 import Login from "@/pages/login";
@@ -27,6 +28,7 @@ function AuthenticatedRouter() {
       <Route path="/" component={Home} />
       <Route path="/events" component={Events} />
       <Route path="/recommended-artists" component={RecommendedArtists} />
+      <Route path="/liked-songs" component={LikedSongs} />
       <Route path="/playlist/:id" component={PlaylistDetail} />
       <Route path="/spotify-playlist/:id" component={SpotifyPlaylistDetail} />
       <Route component={Home} />

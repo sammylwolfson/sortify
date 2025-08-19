@@ -267,6 +267,37 @@ export class SpotifyService {
     }
   }
 
+  // Get user's liked songs from Spotify
+  async getLikedSongs(accessToken: string, limit: number = 50, offset: number = 0) {
+    try {
+      const response = await fetch(
+        `https://api.spotify.com/v1/me/tracks?limit=${limit}&offset=${offset}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to get liked songs');
+      }
+
+      const data = await response.json();
+      return {
+        items: data.items,
+        total: data.total,
+        limit: data.limit,
+        offset: data.offset,
+        next: data.next,
+        previous: data.previous
+      };
+    } catch (error) {
+      console.error('Error getting liked songs:', error);
+      throw new Error('Failed to get liked songs');
+    }
+  }
+
   // Get detailed playlist information with tracks
   async getPlaylistDetails(accessToken: string, playlistId: string) {
     const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {

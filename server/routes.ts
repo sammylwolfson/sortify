@@ -334,6 +334,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user's liked songs from Spotify
+  app.get("/api/spotify/liked-songs", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).json({ message: "No access token provided" });
+      }
+
+      const accessToken = authHeader.replace("Bearer ", "");
+      const limit = parseInt(req.query.limit as string) || 50;
+      const offset = parseInt(req.query.offset as string) || 0;
+      
+      const likedSongs = await spotifyService.getLikedSongs(accessToken, limit, offset);
+      res.json(likedSongs);
+    } catch (error) {
+      console.error("Failed to fetch liked songs:", error);
+      res.status(500).json({ message: "Failed to fetch liked songs" });
+    }
+  });
+
   app.post("/api/spotify/sync-playlist/:spotifyId", async (req, res) => {
     try {
       const accessToken = req.headers.authorization?.replace('Bearer ', '');
