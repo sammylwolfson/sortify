@@ -1,7 +1,15 @@
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import { Sidebar } from "@/components/sidebar";
+import { PlaybackControls } from "@/components/playback-controls";
+import { CreatePlaylistModalEnhanced } from "@/components/create-playlist-modal-enhanced";
+import { SearchBar } from "@/components/search-bar";
+import { SpotifyConnect } from "@/components/spotify-connect";
+import { TokenExpiredNotice } from "@/components/token-expired-notice";
+import { useSpotify } from "@/hooks/use-spotify";
 import { Button } from "@/components/ui/button";
-import { Play, Heart, Clock, Plus } from "lucide-react";
+import { Play, Heart, Clock, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 interface SpotifyTrack {
   track: {
@@ -36,6 +44,21 @@ interface SpotifyPlaylistDetails {
 export function SpotifyPlaylistDetail() {
   const params = useParams();
   const playlistId = params.id;
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { accessToken, setAccessToken, isConnected } = useSpotify();
+
+  const handleReconnect = () => {
+    const authWindow = window.open("/auth/spotify", "spotify-auth", "width=600,height=700,scrollbars=yes,resizable=yes");
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data.type === 'SPOTIFY_AUTH_SUCCESS') {
+        setAccessToken(event.data.accessToken);
+        authWindow?.close();
+        window.removeEventListener('message', handleMessage);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+  };
 
   const { data: playlist, isLoading } = useQuery<SpotifyPlaylistDetails>({
     queryKey: [`/api/spotify/playlists/${playlistId}`],
@@ -50,46 +73,101 @@ export function SpotifyPlaylistDetail() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 bg-gradient-to-b from-listlab-green/20 to-listlab-gray">
-        <div className="p-8">
-          <div className="animate-pulse">
-            <div className="h-64 bg-gray-700 rounded mb-6"></div>
-            <div className="h-8 bg-gray-700 rounded w-1/3 mb-4"></div>
-            <div className="h-4 bg-gray-700 rounded w-1/4"></div>
+      <div className="min-h-screen bg-black text-white flex">
+        <Sidebar />
+        <div className="flex-1 flex flex-col ml-64">
+          <div className="bg-listlab-gray border-b border-gray-700 p-4">
+            <div className="flex items-center justify-between">
+              <SearchBar />
+              <div className="flex items-center space-x-4">
+                <SpotifyConnect accessToken={accessToken} onConnect={setAccessToken} />
+                <div className="w-8 h-8 bg-gray-600 rounded-full"></div>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 bg-gradient-to-b from-listlab-green/20 to-listlab-gray">
+            <div className="p-8">
+              <div className="animate-pulse">
+                <div className="h-64 bg-gray-700 rounded mb-6"></div>
+                <div className="h-8 bg-gray-700 rounded w-1/3 mb-4"></div>
+                <div className="h-4 bg-gray-700 rounded w-1/4"></div>
+              </div>
+            </div>
           </div>
         </div>
+        <PlaybackControls />
       </div>
     );
   }
 
   if (!playlist) {
     return (
-      <div className="flex-1 bg-listlab-gray flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Playlist not found</h2>
-          <p className="text-listlab-text">Unable to load this Spotify playlist.</p>
+      <div className="min-h-screen bg-black text-white flex">
+        <Sidebar />
+        <div className="flex-1 flex flex-col ml-64">
+          <div className="bg-listlab-gray border-b border-gray-700 p-4">
+            <div className="flex items-center justify-between">
+              <SearchBar />
+              <div className="flex items-center space-x-4">
+                <SpotifyConnect accessToken={accessToken} onConnect={setAccessToken} />
+                <div className="w-8 h-8 bg-gray-600 rounded-full"></div>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 bg-listlab-gray flex items-center justify-center">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-4">Playlist not found</h2>
+              <p className="text-listlab-text">Unable to load this Spotify playlist.</p>
+            </div>
+          </div>
         </div>
+        <PlaybackControls />
       </div>
     );
   }
 
   return (
-    <div className="flex-1 bg-gradient-to-b from-listlab-green/20 to-listlab-gray">
-      {/* Playlist Header */}
-      <div className="flex items-end p-8 pb-6">
-        <img
-          src={playlist.images[0]?.url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300"}
-          alt={playlist.name}
-          className="w-60 h-60 rounded-lg shadow-2xl mr-8"
-        />
-        <div className="flex-1">
-          <p className="text-sm font-semibold uppercase tracking-wider mb-2">Spotify Playlist</p>
-          <h1 className="text-6xl font-bold mb-4 text-white">{playlist.name}</h1>
-          {playlist.description && (
-            <p className="text-listlab-text mb-4 text-lg">{playlist.description}</p>
-          )}
-          <div className="flex items-center text-sm text-listlab-text space-x-2">
-            <span className="font-semibold text-white">{playlist.owner.display_name}</span>
+    <div className="min-h-screen bg-black text-white flex">
+      {/* Sidebar - Fixed */}
+      <Sidebar />
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col ml-64">
+        {/* Top Bar */}
+        <div className="bg-listlab-gray border-b border-gray-700 p-4">
+          <div className="flex items-center justify-between">
+            <SearchBar />
+            <div className="flex items-center space-x-4">
+              <SpotifyConnect accessToken={accessToken} onConnect={setAccessToken} />
+              <div className="w-8 h-8 bg-gray-600 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <div className="flex-1 overflow-y-auto scrollbar-hide">
+          <div className="bg-gradient-to-b from-listlab-green/20 to-listlab-gray">
+            {!isConnected && (
+              <div className="p-8 pb-0">
+                <TokenExpiredNotice onReconnect={handleReconnect} />
+              </div>
+            )}
+            
+            {/* Playlist Header */}
+            <div className="flex items-end p-8 pb-6">
+              <img
+                src={playlist.images[0]?.url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300"}
+                alt={playlist.name}
+                className="w-60 h-60 rounded-lg shadow-2xl mr-8"
+              />
+              <div className="flex-1">
+                <p className="text-sm font-semibold uppercase tracking-wider mb-2">Spotify Playlist</p>
+                <h1 className="text-6xl font-bold mb-4 text-white">{playlist.name}</h1>
+                {playlist.description && (
+                  <p className="text-listlab-text mb-4 text-lg">{playlist.description}</p>
+                )}
+                <div className="flex items-center text-sm text-listlab-text space-x-2">
+                  <span className="font-semibold text-white">{playlist.owner.display_name}</span>
             <span>•</span>
             <span>{playlist.tracks.total} songs</span>
           </div>
@@ -179,6 +257,18 @@ export function SpotifyPlaylistDetail() {
           ))}
         </div>
       </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Playback Controls */}
+      <PlaybackControls />
+
+      {/* Create Playlist Modal */}
+      <CreatePlaylistModalEnhanced
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+      />
     </div>
   );
 }

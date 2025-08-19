@@ -123,6 +123,8 @@ Changelog:
 - August 19, 2025. Added "Recommended Artists" tab below "Upcoming Events" with personalized artist discovery based on listening history
 - August 19, 2025. Moved "Your Library" above "Liked Songs" in sidebar and added artist recommendation algorithm using Spotify's recommendation API
 - August 19, 2025. Implemented follow/unfollow artist functionality with real-time updates and filtered recommendations to exclude already followed artists
+- August 19, 2025. Added comprehensive "Liked Songs" functionality displaying user's Spotify liked songs with pagination and proper token expiration handling
+- August 19, 2025. Fixed sidebar visibility issue on Spotify playlist detail pages - sidebar now remains fixed and visible across all pages for consistent navigation
 ```
 
 ## User Preferences
