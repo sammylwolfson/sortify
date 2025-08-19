@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SpotifyProvider, useSpotify } from "@/hooks/use-spotify";
 import Home from "@/pages/home";
+import Events from "@/pages/events";
 import PlaylistDetail from "@/pages/playlist-detail";
 import { SpotifyPlaylistDetail } from "@/pages/spotify-playlist-detail";
 import Login from "@/pages/login";
@@ -23,6 +24,7 @@ function AuthenticatedRouter() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/events" component={Events} />
       <Route path="/playlist/:id" component={PlaylistDetail} />
       <Route path="/spotify-playlist/:id" component={SpotifyPlaylistDetail} />
       <Route component={Home} />

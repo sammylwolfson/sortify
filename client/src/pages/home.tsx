@@ -6,9 +6,7 @@ import { SearchBar } from "@/components/search-bar";
 import { SpotifyConnect } from "@/components/spotify-connect";
 import { useSpotify } from "@/hooks/use-spotify";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, ChevronLeft, ChevronRight, Calendar, MapPin, Clock } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Home() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -54,100 +52,20 @@ export default function Home() {
         {/* Main Content Area */}
         <div className="flex-1 overflow-y-auto scrollbar-hide">
           <div className="p-8">
-            <Tabs defaultValue="home" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="home">Home</TabsTrigger>
-                <TabsTrigger value="events">Upcoming Events</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="home" className="space-y-4">
-                <div className="text-center py-20">
-                  <h1 className="text-4xl font-bold mb-4">Welcome to ListLab</h1>
-                  <p className="text-xl text-gray-400 mb-8">Your personal playlist management studio</p>
-                  <p className="text-gray-400 mb-8">
-                    Create new playlists or browse your Spotify playlists from the sidebar
-                  </p>
-                  <Button
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="listlab-green listlab-green-hover text-black font-semibold px-8 py-4 rounded-full flex items-center space-x-2 mx-auto text-lg"
-                  >
-                    <Plus className="h-5 w-5" />
-                    <span>Create Your First Playlist</span>
-                  </Button>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="events" className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold">Upcoming Events</h2>
-                  <Button variant="outline" className="text-listlab-green border-listlab-green hover:bg-listlab-green hover:text-black">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Connect Calendar
-                  </Button>
-                </div>
-                
-                <div className="grid gap-4">
-                  <Card className="bg-listlab-light-gray border-gray-700">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-white flex items-center gap-2">
-                          <Calendar className="h-5 w-5 text-listlab-green" />
-                          Concert Night
-                        </CardTitle>
-                        <div className="text-sm text-gray-400 flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          8:00 PM
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="flex items-center text-gray-300">
-                          <MapPin className="h-4 w-4 mr-2 text-listlab-green" />
-                          Madison Square Garden, NYC
-                        </div>
-                        <p className="text-gray-400">Live music event featuring your favorite artists</p>
-                        <Button size="sm" className="listlab-green listlab-green-hover text-black mt-2">
-                          Create Playlist for Event
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-listlab-light-gray border-gray-700">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-white flex items-center gap-2">
-                          <Calendar className="h-5 w-5 text-listlab-green" />
-                          Music Festival
-                        </CardTitle>
-                        <div className="text-sm text-gray-400 flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          2:00 PM
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="flex items-center text-gray-300">
-                          <MapPin className="h-4 w-4 mr-2 text-listlab-green" />
-                          Central Park, NYC
-                        </div>
-                        <p className="text-gray-400">Weekend festival with multiple artists and genres</p>
-                        <Button size="sm" className="listlab-green listlab-green-hover text-black mt-2">
-                          Create Playlist for Event
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <div className="text-center py-8">
-                    <p className="text-gray-400 mb-4">Connect your calendar to see personalized upcoming events</p>
-                    <p className="text-sm text-gray-500">Events will sync with your music preferences to suggest playlist creation</p>
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
+            <div className="text-center py-20">
+              <h1 className="text-4xl font-bold mb-4">Welcome to ListLab</h1>
+              <p className="text-xl text-gray-400 mb-8">Your personal playlist management studio</p>
+              <p className="text-gray-400 mb-8">
+                Create new playlists or browse your Spotify playlists from the sidebar
+              </p>
+              <Button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="listlab-green listlab-green-hover text-black font-semibold px-8 py-4 rounded-full flex items-center space-x-2 mx-auto text-lg"
+              >
+                <Plus className="h-5 w-5" />
+                <span>Create Your First Playlist</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>

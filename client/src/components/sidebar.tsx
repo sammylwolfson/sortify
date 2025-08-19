@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Home, Search, Library, Plus, Heart, List, Music } from "lucide-react";
+import { Home, Search, Library, Plus, Heart, List, Music, Calendar } from "lucide-react";
 import type { Playlist } from "@shared/schema";
 import { useSpotify } from "@/hooks/use-spotify";
 
@@ -56,6 +56,16 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
             <Library className="h-5 w-5" />
             <span className="font-medium">Your Library</span>
           </Button>
+          <Button
+            variant="ghost"
+            className={`w-full justify-start space-x-3 p-3 h-auto ${
+              location === "/events" ? "text-white" : "text-listlab-text hover:text-white"
+            }`}
+            onClick={() => setLocation("/events")}
+          >
+            <Calendar className="h-5 w-5" />
+            <span className="font-medium">Upcoming Events</span>
+          </Button>
         </nav>
       </div>
       
@@ -79,7 +89,7 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
       </div>
       
       {/* Spotify Playlists */}
-      {accessToken && spotifyPlaylists && spotifyPlaylists.length > 0 && (
+      {accessToken && spotifyPlaylists && Array.isArray(spotifyPlaylists) && spotifyPlaylists.length > 0 && (
         <div className="px-6 py-4 border-t border-gray-800">
           <h3 className="text-sm font-semibold text-listlab-text mb-3 uppercase tracking-wider">Your Spotify Playlists</h3>
           <div className="space-y-1 max-h-60 overflow-y-auto">
