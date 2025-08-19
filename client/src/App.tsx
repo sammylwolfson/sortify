@@ -8,11 +8,15 @@ import Home from "@/pages/home";
 import PlaylistDetail from "@/pages/playlist-detail";
 import { SpotifyPlaylistDetail } from "@/pages/spotify-playlist-detail";
 import Login from "@/pages/login";
+import { useEffect } from "react";
 
 function AuthenticatedRouter() {
-  const { accessToken } = useSpotify();
+  const { accessToken, isConnected } = useSpotify();
 
-  if (!accessToken) {
+  // Authentication check happens automatically via useSpotify hook
+
+  // Always show login page if not connected to Spotify
+  if (!isConnected || !accessToken) {
     return <Login />;
   }
 

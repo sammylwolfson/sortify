@@ -4,6 +4,10 @@ import { List, Music } from "lucide-react";
 
 export default function Login() {
   const handleSpotifyLogin = () => {
+    // Clear any existing tokens to force fresh login
+    localStorage.removeItem('spotify_access_token');
+    localStorage.removeItem('spotify_user_name');
+    
     // Open Spotify auth in a new window
     const authWindow = window.open(
       "/auth/spotify",
@@ -17,7 +21,8 @@ export default function Login() {
       
       if (event.data.type === 'SPOTIFY_AUTH_SUCCESS') {
         authWindow?.close();
-        window.location.href = '/'; // Redirect to main app
+        // Force page reload to update auth state
+        window.location.reload();
       }
     };
 
