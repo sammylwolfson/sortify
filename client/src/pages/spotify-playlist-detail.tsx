@@ -145,7 +145,7 @@ export function SpotifyPlaylistDetail() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 overflow-y-auto scrollbar-hide">
+        <div className="flex-1 overflow-y-auto scrollbar-hide main-content">
           <div className="bg-gradient-to-b from-listlab-green/20 to-listlab-gray">
             {!isConnected && (
               <div className="p-8 pb-0">

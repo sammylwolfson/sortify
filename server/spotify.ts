@@ -64,7 +64,7 @@ export class SpotifyService {
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: this.config.clientId,
-      scope: 'user-read-private user-read-email playlist-read-private playlist-modify-public playlist-modify-private user-library-read user-follow-read user-top-read',
+      scope: 'user-read-private user-read-email playlist-read-private playlist-modify-public playlist-modify-private user-library-read user-follow-read user-top-read user-read-playback-state user-modify-playback-state streaming',
       redirect_uri: this.config.redirectUri,
       state: state,
       show_dialog: 'true'

@@ -99,6 +99,16 @@
   .gradient-overlay {
     background: linear-gradient(180deg, transparent 0%, rgba(18, 18, 18, 0.8) 100%);
   }
+
+  /* Ensure content doesn't overlap with fixed bottom player */
+  .main-content {
+    padding-bottom: 90px; /* Height of playback controls + some spacing */
+  }
+
+  .playback-controls {
+    height: 90px;
+    z-index: 1000;
+  }
 }
 
 @layer utilities {

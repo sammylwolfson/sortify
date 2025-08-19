@@ -125,6 +125,9 @@ Changelog:
 - August 19, 2025. Implemented follow/unfollow artist functionality with real-time updates and filtered recommendations to exclude already followed artists
 - August 19, 2025. Added comprehensive "Liked Songs" functionality displaying user's Spotify liked songs with pagination and proper token expiration handling
 - August 19, 2025. Fixed sidebar visibility issue on Spotify playlist detail pages - sidebar now remains fixed and visible across all pages for consistent navigation
+- August 19, 2025. Implemented Spotify Web Playback SDK integration for real music playback functionality with play/pause, next/previous track controls
+- August 19, 2025. Fixed bottom playback bar overlapping content by adding proper spacing classes and z-index management
+- August 19, 2025. Added streaming, user-read-playback-state, and user-modify-playback-state scopes to Spotify authentication for full playback control
 ```
 
 ## User Preferences
