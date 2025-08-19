@@ -115,6 +115,8 @@ Changelog:
 - August 19, 2025. Created enhanced playlist creation modal with manual and automatic generation options
 - August 19, 2025. Added comprehensive audio feature criteria for automatic playlist generation (BPM, Energy, Danceability, Loudness, Valence, Length, Acousticness, Popularity, Artist Separation, Genre selection)
 - August 19, 2025. Web application transformation complete - full login-required experience with advanced playlist management
+- August 19, 2025. Removed all non-personal content from home page: "Your Playlists" section (mock data), "Recently Played Artists" section, and "Studio Equipment" section
+- August 19, 2025. Created clean welcome page that directs users to their personal Spotify playlists in the sidebar and playlist creation functionality
 ```
 
 ## User Preferences

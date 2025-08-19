@@ -1,8 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Sidebar } from "@/components/sidebar";
-import { PlaylistCard } from "@/components/playlist-card";
-import { ArtistCard } from "@/components/artist-card";
 import { PlaybackControls } from "@/components/playback-controls";
 import { CreatePlaylistModalEnhanced } from "@/components/create-playlist-modal-enhanced";
 import { SearchBar } from "@/components/search-bar";
@@ -10,46 +7,10 @@ import { SpotifyConnect } from "@/components/spotify-connect";
 import { useSpotify } from "@/hooks/use-spotify";
 import { Button } from "@/components/ui/button";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
-import type { Playlist, Artist } from "@shared/schema";
 
 export default function Home() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { accessToken, setAccessToken } = useSpotify();
-
-  const { data: playlists, isLoading: playlistsLoading } = useQuery({
-    queryKey: ["/api/playlists"],
-  });
-
-  const { data: artists, isLoading: artistsLoading } = useQuery({
-    queryKey: ["/api/artists"],
-  });
-
-  const equipmentItems = [
-    {
-      id: 1,
-      name: "Mixing Console",
-      description: "Professional audio equipment",
-      image: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=400&h=300"
-    },
-    {
-      id: 2,
-      name: "Studio Microphone",
-      description: "Recording equipment",
-      image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300"
-    },
-    {
-      id: 3,
-      name: "Studio Headphones",
-      description: "Monitoring equipment",
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300"
-    },
-    {
-      id: 4,
-      name: "MIDI Controller",
-      description: "Music production",
-      image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300"
-    }
-  ];
 
   return (
     <div className="flex h-screen bg-listlab-dark text-white overflow-hidden">
@@ -91,74 +52,19 @@ export default function Home() {
         {/* Main Content Area */}
         <div className="flex-1 overflow-y-auto scrollbar-hide">
           <div className="p-8">
-            <div className="flex items-center justify-between mb-8">
-              <h1 className="text-3xl font-bold">Your Playlists</h1>
+            <div className="text-center py-20">
+              <h1 className="text-4xl font-bold mb-4">Welcome to ListLab</h1>
+              <p className="text-xl text-gray-400 mb-8">Your personal playlist management studio</p>
+              <p className="text-gray-400 mb-8">
+                Create new playlists or browse your Spotify playlists from the sidebar
+              </p>
               <Button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="listlab-green listlab-green-hover text-black font-semibold px-6 py-3 rounded-full flex items-center space-x-2"
+                className="listlab-green listlab-green-hover text-black font-semibold px-8 py-4 rounded-full flex items-center space-x-2 mx-auto text-lg"
               >
-                <Plus className="h-4 w-4" />
-                <span>Create Playlist</span>
+                <Plus className="h-5 w-5" />
+                <span>Create Your First Playlist</span>
               </Button>
-            </div>
-            
-            {/* Playlists Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
-              {playlistsLoading ? (
-                Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="bg-listlab-light-gray rounded-lg p-4">
-                      <div className="aspect-square bg-gray-600 rounded-lg mb-4"></div>
-                      <div className="h-4 bg-gray-600 rounded mb-2"></div>
-                      <div className="h-3 bg-gray-600 rounded w-3/4"></div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                playlists && Array.isArray(playlists) ? playlists.map((playlist: Playlist) => (
-                  <PlaylistCard key={playlist.id} playlist={playlist} />
-                )) : null
-              )}
-            </div>
-            
-            {/* Recently Played Artists */}
-            <div className="mt-12">
-              <h2 className="text-2xl font-bold mb-6">Recently Played Artists</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                {artistsLoading ? (
-                  Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="animate-pulse">
-                      <div className="bg-listlab-light-gray rounded-lg p-4 text-center">
-                        <div className="aspect-square bg-gray-600 rounded-full mb-4"></div>
-                        <div className="h-4 bg-gray-600 rounded mb-2"></div>
-                        <div className="h-3 bg-gray-600 rounded w-1/2 mx-auto"></div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  artists && Array.isArray(artists) ? artists.map((artist: Artist) => (
-                    <ArtistCard key={artist.id} artist={artist} />
-                  )) : null
-                )}
-              </div>
-            </div>
-            
-            {/* Music Equipment Section */}
-            <div className="mt-12">
-              <h2 className="text-2xl font-bold mb-6">Studio Equipment</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {equipmentItems.map((item) => (
-                  <div key={item.id} className="playlist-card p-4 rounded-lg cursor-pointer">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full aspect-video object-cover rounded-lg shadow-lg mb-4"
-                    />
-                    <h3 className="font-semibold text-white mb-1">{item.name}</h3>
-                    <p className="text-sm listlab-text">{item.description}</p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
