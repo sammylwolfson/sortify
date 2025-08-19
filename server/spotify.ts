@@ -64,7 +64,7 @@ export class SpotifyService {
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: this.config.clientId,
-      scope: 'user-read-private user-read-email playlist-read-private playlist-modify-public playlist-modify-private',
+      scope: 'user-read-private user-read-email playlist-read-private playlist-modify-public playlist-modify-private user-library-read user-follow-read user-top-read',
       redirect_uri: this.config.redirectUri,
       state: state,
       show_dialog: 'true'
@@ -280,21 +280,27 @@ export class SpotifyService {
       );
 
       if (!response.ok) {
-        throw new Error('Failed to get liked songs');
+        console.error('Spotify API error:', response.status, response.statusText);
+        if (response.status === 401) {
+          throw new Error('Unauthorized - token may be expired');
+        }
+        throw new Error(`Spotify API error: ${response.status}`);
       }
 
       const data = await response.json();
+      console.log('Liked songs response:', { total: data.total, items: data.items?.length });
+      
       return {
-        items: data.items,
-        total: data.total,
-        limit: data.limit,
-        offset: data.offset,
-        next: data.next,
-        previous: data.previous
+        items: data.items || [],
+        total: data.total || 0,
+        limit: data.limit || limit,
+        offset: data.offset || offset,
+        next: data.next || null,
+        previous: data.previous || null
       };
     } catch (error) {
       console.error('Error getting liked songs:', error);
-      throw new Error('Failed to get liked songs');
+      throw error;
     }
   }
 

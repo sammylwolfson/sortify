@@ -130,16 +130,20 @@ export default function LikedSongs() {
               </div>
             ) : error ? (
               <div className="text-center py-20">
-                <p className="text-red-400 mb-4">Failed to load liked songs</p>
+                <p className="text-red-400 mb-4">
+                  {error.message?.includes('scope') || error.message?.includes('403') 
+                    ? "You need to reconnect Spotify with additional permissions to access liked songs" 
+                    : "Failed to load liked songs"}
+                </p>
                 <Button 
-                  onClick={() => window.location.reload()} 
+                  onClick={handleReconnect}
                   variant="outline"
                   className="text-listlab-green border-listlab-green hover:bg-listlab-green hover:text-black"
                 >
-                  Try Again
+                  Reconnect Spotify
                 </Button>
               </div>
-            ) : likedSongsData?.items.length === 0 ? (
+            ) : !likedSongsData?.items || likedSongsData.items.length === 0 ? (
               <div className="text-center py-20">
                 <Heart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">No liked songs yet</h3>
