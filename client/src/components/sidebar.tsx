@@ -103,11 +103,43 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
       </div>
       
       {/* Spotify Playlists */}
-      {accessToken && spotifyPlaylists && Array.isArray(spotifyPlaylists) && spotifyPlaylists.length > 0 && (
+      {accessToken && (
         <div className="px-6 py-4 border-t border-gray-800">
           <h3 className="text-sm font-semibold text-listlab-text mb-3 uppercase tracking-wider">Your Spotify Playlists</h3>
-          <div className="space-y-1 max-h-60 overflow-y-auto">
-            {spotifyPlaylists.map((playlist: any) => (
+          {isLoading ? (
+            <div className="text-center py-4">
+              <div className="text-sm text-listlab-text">Loading playlists...</div>
+            </div>
+          ) : error ? (
+            <div className="text-center py-4">
+              <div className="text-sm text-red-400 mb-2">
+                {error.message?.includes('401') || error.message?.includes('Unauthorized') 
+                  ? "Token expired - reconnect needed" 
+                  : "Failed to load playlists"}
+              </div>
+              <Button
+                size="sm"
+                onClick={() => {
+                  const authWindow = window.open("/auth/spotify", "spotify-auth", "width=600,height=700,scrollbars=yes,resizable=yes");
+                  const handleMessage = (event: MessageEvent) => {
+                    if (event.origin !== window.location.origin) return;
+                    if (event.data.type === 'SPOTIFY_AUTH_SUCCESS') {
+                      window.location.reload(); // Refresh to get new playlists
+                      authWindow?.close();
+                      window.removeEventListener('message', handleMessage);
+                    }
+                  };
+                  window.addEventListener('message', handleMessage);
+                }}
+                variant="outline"
+                className="text-listlab-green border-listlab-green hover:bg-listlab-green hover:text-black text-xs"
+              >
+                Reconnect Spotify
+              </Button>
+            </div>
+          ) : spotifyPlaylists && Array.isArray(spotifyPlaylists) && spotifyPlaylists.length > 0 ? (
+            <div className="space-y-1 max-h-60 overflow-y-auto">
+              {spotifyPlaylists.map((playlist: any) => (
               <Button
                 key={playlist.id}
                 variant="ghost"
@@ -121,8 +153,13 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
                 <Music className="h-4 w-4 mr-2 flex-shrink-0" />
                 <span className="truncate">{playlist.name}</span>
               </Button>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <div className="text-sm text-listlab-text">No playlists found</div>
+            </div>
+          )}
         </div>
       )}
 
