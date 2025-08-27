@@ -40,34 +40,39 @@ export default function Events() {
     enabled: !!accessToken,
   });
 
-  // Mock events filtered by followed artists (in real app, would use concert API like Songkick, Bandsintown, etc.)
+  // Generate upcoming concerts for followed artists (using mock data - in real app, would use concert API like Songkick, Bandsintown, etc.)
   const generatePersonalizedEvents = () => {
     if (!followedArtists || !Array.isArray(followedArtists) || followedArtists.length === 0) {
       return [];
     }
 
-    const sampleEvents = [
-      {
-        id: 1,
-        artist: followedArtists[0]?.name || "Concert Night",
-        venue: "Madison Square Garden, NYC",
-        date: "Tonight",
-        time: "8:00 PM",
-        description: `Live performance by ${followedArtists[0]?.name || "your favorite artist"}`,
-        region: userLocationData?.country || "US"
-      },
-      {
-        id: 2,
-        artist: followedArtists[1]?.name || "Music Festival",
-        venue: "Central Park, NYC",
-        date: "This Weekend",
-        time: "2:00 PM",
-        description: `Festival featuring ${followedArtists[1]?.name || "multiple artists"}`,
-        region: userLocationData?.country || "US"
-      }
+    const venues = [
+      "Madison Square Garden, NYC", "The Forum, Los Angeles", "Red Rocks Amphitheatre, Colorado",
+      "Royal Albert Hall, London", "Sydney Opera House", "Hollywood Bowl, LA",
+      "Wembley Stadium, London", "Coachella Valley, CA", "Austin City Limits, TX"
     ];
 
-    return sampleEvents;
+    const dates = [
+      "Tonight", "Tomorrow", "This Weekend", "Next Week", "February 15th", 
+      "February 22nd", "March 8th", "March 15th", "April 2nd"
+    ];
+
+    const times = ["7:30 PM", "8:00 PM", "9:00 PM", "7:00 PM", "8:30 PM"];
+
+    // Generate events for up to the first 6 followed artists
+    const events = followedArtists.slice(0, 6).map((artist, index) => ({
+      id: index + 1,
+      artist: artist.name,
+      venue: venues[index % venues.length],
+      date: dates[index % dates.length],
+      time: times[index % times.length],
+      description: `Live concert featuring ${artist.name} with special guests`,
+      region: userLocationData?.country || "US",
+      image: artist.images?.[0]?.url || null,
+      genres: artist.genres?.slice(0, 2) || []
+    }));
+
+    return events;
   };
 
   const personalizedEvents = generatePersonalizedEvents();
@@ -142,10 +147,26 @@ export default function Events() {
                     <Card key={event.id} className="bg-listlab-light-gray border-gray-700">
                       <CardHeader>
                         <div className="flex items-center justify-between">
-                          <CardTitle className="text-white flex items-center gap-2">
-                            <Calendar className="h-5 w-5 text-listlab-green" />
-                            {event.artist}
-                          </CardTitle>
+                          <div className="flex items-center gap-3">
+                            {event.image && (
+                              <img 
+                                src={event.image} 
+                                alt={event.artist}
+                                className="w-12 h-12 rounded-full object-cover"
+                              />
+                            )}
+                            <div>
+                              <CardTitle className="text-white flex items-center gap-2">
+                                <Calendar className="h-5 w-5 text-listlab-green" />
+                                {event.artist}
+                              </CardTitle>
+                              {event.genres && event.genres.length > 0 && (
+                                <p className="text-xs text-gray-400 mt-1">
+                                  {event.genres.join(', ')}
+                                </p>
+                              )}
+                            </div>
+                          </div>
                           <div className="text-sm text-gray-400 flex items-center gap-1">
                             <Clock className="h-4 w-4" />
                             {event.time}
@@ -153,10 +174,13 @@ export default function Events() {
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           <div className="flex items-center text-gray-300">
                             <MapPin className="h-4 w-4 mr-2 text-listlab-green" />
                             {event.venue}
+                          </div>
+                          <div className="text-sm font-medium text-white">
+                            📅 {event.date}
                           </div>
                           <p className="text-gray-400">{event.description}</p>
                           <div className="text-xs text-listlab-green font-medium">

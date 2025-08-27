@@ -44,14 +44,6 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
           </Button>
           <Button
             variant="ghost"
-            className="w-full justify-start space-x-3 p-3 h-auto text-listlab-text hover:text-white"
-          >
-            <Search className="h-5 w-5" />
-            <span className="font-medium">Search</span>
-          </Button>
-
-          <Button
-            variant="ghost"
             className={`w-full justify-start space-x-3 p-3 h-auto ${
               location === "/events" ? "text-white" : "text-listlab-text hover:text-white"
             }`}
