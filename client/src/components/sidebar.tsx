@@ -138,7 +138,7 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
               </Button>
             </div>
           ) : spotifyPlaylists && Array.isArray(spotifyPlaylists) && spotifyPlaylists.length > 0 ? (
-            <div className="space-y-1 max-h-60 overflow-y-auto">
+            <div className="space-y-1">
               {spotifyPlaylists.map((playlist: any) => (
               <Button
                 key={playlist.id}
