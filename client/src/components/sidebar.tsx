@@ -23,7 +23,7 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
   });
 
   return (
-    <div className="w-60 bg-black flex flex-col">
+    <div className="w-60 bg-black flex flex-col h-screen overflow-y-auto sidebar-scroll">
       {/* Logo and Main Navigation */}
       <div className="p-6">
         <div className="flex items-center space-x-2 mb-8">
