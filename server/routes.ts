@@ -34,10 +34,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/playlists", async (req, res) => {
     try {
-      const validatedData = insertPlaylistSchema.parse(req.body);
+      // Extract criteria before validation, as it's not part of the playlist schema
+      const { criteria, ...playlistData } = req.body;
+      const validatedData = insertPlaylistSchema.parse(playlistData);
       const playlist = await storage.createPlaylist({
         ...validatedData,
-        userId: defaultUserId
+        userId: defaultUserId,
+        criteria: criteria // Pass criteria for automatic generation
       });
       res.status(201).json(playlist);
     } catch (error) {

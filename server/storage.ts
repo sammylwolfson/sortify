@@ -27,7 +27,7 @@ export interface IStorage {
   getPlaylists(userId: number): Promise<Playlist[]>;
   getPlaylist(id: number): Promise<Playlist | undefined>;
   getPlaylistWithSongs(id: number): Promise<PlaylistWithSongs | undefined>;
-  createPlaylist(playlist: InsertPlaylist & { userId: number }): Promise<Playlist>;
+  createPlaylist(playlist: InsertPlaylist & { userId: number; criteria?: any }): Promise<Playlist>;
   updatePlaylist(id: number, playlist: Partial<InsertPlaylist>): Promise<Playlist | undefined>;
   deletePlaylist(id: number): Promise<boolean>;
 
@@ -86,16 +86,67 @@ export class MemStorage implements IStorage {
     };
     this.users.set(user.id, user);
 
-    // Create sample songs
-    const sampleSongs: Song[] = [
-      { id: this.currentSongId++, title: "Blinding Lights", artist: "The Weeknd", album: "After Hours", duration: 200, coverImage: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300", audioUrl: null },
-      { id: this.currentSongId++, title: "Watermelon Sugar", artist: "Harry Styles", album: "Fine Line", duration: 174, coverImage: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=300&h=300", audioUrl: null },
-      { id: this.currentSongId++, title: "Levitating", artist: "Dua Lipa", album: "Future Nostalgia", duration: 203, coverImage: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&h=300", audioUrl: null },
-      { id: this.currentSongId++, title: "Good 4 U", artist: "Olivia Rodrigo", album: "SOUR", duration: 178, coverImage: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=300&h=300", audioUrl: null },
-      { id: this.currentSongId++, title: "Stay", artist: "The Kid LAROI & Justin Bieber", album: "F*CK LOVE 3", duration: 141, coverImage: "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=300&h=300", audioUrl: null },
+    // Create sample songs with audio features
+    const sampleSongs: (Song & { audioFeatures: any })[] = [
+      { 
+        id: this.currentSongId++, title: "Blinding Lights", artist: "The Weeknd", album: "After Hours", duration: 200, 
+        coverImage: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300", audioUrl: null,
+        audioFeatures: { bpm: 171, energy: 0.78, danceability: 0.51, loudness: -5.9, valence: 0.33, acousticness: 0.001, popularity: 85, genres: ["pop", "electronic"] }
+      },
+      { 
+        id: this.currentSongId++, title: "Watermelon Sugar", artist: "Harry Styles", album: "Fine Line", duration: 174, 
+        coverImage: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=300&h=300", audioUrl: null,
+        audioFeatures: { bpm: 95, energy: 0.54, danceability: 0.55, loudness: -4.7, valence: 0.56, acousticness: 0.122, popularity: 81, genres: ["pop", "indie"] }
+      },
+      { 
+        id: this.currentSongId++, title: "Levitating", artist: "Dua Lipa", album: "Future Nostalgia", duration: 203, 
+        coverImage: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&h=300", audioUrl: null,
+        audioFeatures: { bpm: 103, energy: 0.82, danceability: 0.70, loudness: -3.1, valence: 0.92, acousticness: 0.003, popularity: 88, genres: ["pop", "disco"] }
+      },
+      { 
+        id: this.currentSongId++, title: "Good 4 U", artist: "Olivia Rodrigo", album: "SOUR", duration: 178, 
+        coverImage: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=300&h=300", audioUrl: null,
+        audioFeatures: { bpm: 166, energy: 0.66, danceability: 0.56, loudness: -5.1, valence: 0.56, acousticness: 0.102, popularity: 79, genres: ["pop", "rock"] }
+      },
+      { 
+        id: this.currentSongId++, title: "Stay", artist: "The Kid LAROI & Justin Bieber", album: "F*CK LOVE 3", duration: 141, 
+        coverImage: "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=300&h=300", audioUrl: null,
+        audioFeatures: { bpm: 169, energy: 0.76, danceability: 0.59, loudness: -5.5, valence: 0.75, acousticness: 0.012, popularity: 92, genres: ["pop", "hip-hop"] }
+      },
+      { 
+        id: this.currentSongId++, title: "Heat Waves", artist: "Glass Animals", album: "Dreamland", duration: 238, 
+        coverImage: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300", audioUrl: null,
+        audioFeatures: { bpm: 80, energy: 0.76, danceability: 0.76, loudness: -6.7, valence: 0.44, acousticness: 0.44, popularity: 90, genres: ["indie", "alternative"] }
+      },
+      { 
+        id: this.currentSongId++, title: "As It Was", artist: "Harry Styles", album: "Harry's House", duration: 167, 
+        coverImage: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=300&h=300", audioUrl: null,
+        audioFeatures: { bpm: 173, energy: 0.54, danceability: 0.51, loudness: -8.3, valence: 0.70, acousticness: 0.35, popularity: 100, genres: ["pop", "indie"] }
+      },
+      { 
+        id: this.currentSongId++, title: "Anti-Hero", artist: "Taylor Swift", album: "Midnights", duration: 200, 
+        coverImage: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&h=300", audioUrl: null,
+        audioFeatures: { bpm: 97, energy: 0.65, danceability: 0.71, loudness: -6.8, valence: 0.65, acousticness: 0.11, popularity: 95, genres: ["pop", "indie"] }
+      },
+      { 
+        id: this.currentSongId++, title: "Unholy", artist: "Sam Smith ft. Kim Petras", album: "Gloria", duration: 156, 
+        coverImage: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=300&h=300", audioUrl: null,
+        audioFeatures: { bpm: 132, energy: 0.85, danceability: 0.80, loudness: -4.2, valence: 0.39, acousticness: 0.001, popularity: 87, genres: ["pop", "electronic"] }
+      },
+      { 
+        id: this.currentSongId++, title: "Flowers", artist: "Miley Cyrus", album: "Endless Summer Vacation", duration: 200, 
+        coverImage: "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=300&h=300", audioUrl: null,
+        audioFeatures: { bpm: 96, energy: 0.70, danceability: 0.69, loudness: -4.9, valence: 0.64, acousticness: 0.03, popularity: 93, genres: ["pop", "rock"] }
+      },
     ];
 
-    sampleSongs.forEach(song => this.songs.set(song.id, song));
+    sampleSongs.forEach(songWithFeatures => {
+      const { audioFeatures, ...song } = songWithFeatures;
+      this.songs.set(song.id, song);
+      // Store audio features separately for filtering (in real app, would be in database)
+      (this as any).audioFeatures = (this as any).audioFeatures || new Map();
+      (this as any).audioFeatures.set(song.id, audioFeatures);
+    });
 
     // Create sample artists
     const sampleArtists: Artist[] = [
@@ -174,7 +225,7 @@ export class MemStorage implements IStorage {
     };
   }
 
-  async createPlaylist(playlist: InsertPlaylist & { userId: number }): Promise<Playlist> {
+  async createPlaylist(playlist: InsertPlaylist & { userId: number; criteria?: any }): Promise<Playlist> {
     const newPlaylist: Playlist = {
       id: this.currentPlaylistId++,
       name: playlist.name,
@@ -187,6 +238,12 @@ export class MemStorage implements IStorage {
       isSpotifyLinked: playlist.isSpotifyLinked || null
     };
     this.playlists.set(newPlaylist.id, newPlaylist);
+    
+    // If criteria provided, auto-generate songs
+    if (playlist.criteria) {
+      await this.generatePlaylistSongs(newPlaylist.id, playlist.criteria);
+    }
+    
     return newPlaylist;
   }
 
@@ -294,6 +351,103 @@ export class MemStorage implements IStorage {
     };
     this.artists.set(newArtist.id, newArtist);
     return newArtist;
+  }
+
+  private async generatePlaylistSongs(playlistId: number, criteria: any): Promise<void> {
+    const audioFeatures = (this as any).audioFeatures as Map<number, any>;
+    if (!audioFeatures) return;
+
+    // Get all available songs with audio features
+    const eligibleSongs: Array<{ song: Song, features: any }> = [];
+    
+    for (const [songId, song] of this.songs.entries()) {
+      const features = audioFeatures.get(songId);
+      if (!features) continue;
+      
+      let matches = true;
+      const { enabledCriteria } = criteria;
+      
+      // Check BPM range
+      if (enabledCriteria?.bpm && (features.bpm < criteria.bpm[0] || features.bpm > criteria.bpm[1])) {
+        matches = false;
+      }
+      
+      // Check energy range  
+      if (enabledCriteria?.energy && (features.energy < criteria.energy[0] || features.energy > criteria.energy[1])) {
+        matches = false;
+      }
+      
+      // Check danceability range
+      if (enabledCriteria?.danceability && (features.danceability < criteria.danceability[0] || features.danceability > criteria.danceability[1])) {
+        matches = false;
+      }
+      
+      // Check loudness range
+      if (enabledCriteria?.loudness && (features.loudness < criteria.loudness[0] || features.loudness > criteria.loudness[1])) {
+        matches = false;
+      }
+      
+      // Check valence range
+      if (enabledCriteria?.valence && (features.valence < criteria.valence[0] || features.valence > criteria.valence[1])) {
+        matches = false;
+      }
+      
+      // Check length range
+      if (enabledCriteria?.length && (song.duration < criteria.length[0] || song.duration > criteria.length[1])) {
+        matches = false;
+      }
+      
+      // Check acousticness range
+      if (enabledCriteria?.acousticness && (features.acousticness < criteria.acousticness[0] || features.acousticness > criteria.acousticness[1])) {
+        matches = false;
+      }
+      
+      // Check popularity range
+      if (enabledCriteria?.popularity && (features.popularity < criteria.popularity[0] || features.popularity > criteria.popularity[1])) {
+        matches = false;
+      }
+      
+      // Check genres
+      if (enabledCriteria?.genres && criteria.genres.length > 0) {
+        const hasMatchingGenre = criteria.genres.some((genre: string) => 
+          features.genres.includes(genre.toLowerCase())
+        );
+        if (!hasMatchingGenre) {
+          matches = false;
+        }
+      }
+      
+      if (matches) {
+        eligibleSongs.push({ song, features });
+      }
+    }
+    
+    // Shuffle and limit songs
+    const shuffled = eligibleSongs.sort(() => Math.random() - 0.5);
+    const selectedSongs = shuffled.slice(0, Math.min(25, shuffled.length)); // Max 25 songs
+    
+    // Apply artist separation if enabled
+    let finalSongs = selectedSongs;
+    if (criteria.artistSeparation) {
+      const seenArtists = new Set<string>();
+      finalSongs = selectedSongs.filter(({ song }) => {
+        if (seenArtists.has(song.artist)) {
+          return false;
+        }
+        seenArtists.add(song.artist);
+        return true;
+      });
+    }
+    
+    // Add songs to playlist
+    for (let i = 0; i < finalSongs.length; i++) {
+      const { song } = finalSongs[i];
+      await this.addSongToPlaylist({
+        playlistId,
+        songId: song.id,
+        position: i
+      });
+    }
   }
 }
 
