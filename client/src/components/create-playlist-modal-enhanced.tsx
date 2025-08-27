@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useSpotify } from "@/hooks/use-spotify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -50,6 +51,7 @@ export function CreatePlaylistModalEnhanced({ open, onOpenChange }: CreatePlayli
   const [creationType, setCreationType] = useState<"manual" | "automatic">("manual");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const { accessToken } = useSpotify();
   const [criteria, setCriteria] = useState<PlaylistCriteria>({
     bpm: [60, 180],
     energy: [0, 1],
@@ -78,7 +80,7 @@ export function CreatePlaylistModalEnhanced({ open, onOpenChange }: CreatePlayli
   const queryClient = useQueryClient();
 
   const createPlaylistMutation = useMutation({
-    mutationFn: async (data: { name: string; description?: string; criteria?: PlaylistCriteria }) => {
+    mutationFn: async (data: { name: string; description?: string; criteria?: PlaylistCriteria; accessToken?: string }) => {
       const response = await apiRequest("POST", "/api/playlists", data);
       return response.json();
     },
@@ -109,7 +111,7 @@ export function CreatePlaylistModalEnhanced({ open, onOpenChange }: CreatePlayli
     const payload = {
       name: name.trim(),
       description: description.trim() || undefined,
-      ...(creationType === "automatic" && { criteria })
+      ...(creationType === "automatic" && { criteria, accessToken })
     };
 
     createPlaylistMutation.mutate(payload);

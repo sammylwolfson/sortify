@@ -27,7 +27,7 @@ export interface IStorage {
   getPlaylists(userId: number): Promise<Playlist[]>;
   getPlaylist(id: number): Promise<Playlist | undefined>;
   getPlaylistWithSongs(id: number): Promise<PlaylistWithSongs | undefined>;
-  createPlaylist(playlist: InsertPlaylist & { userId: number; criteria?: any }): Promise<Playlist>;
+  createPlaylist(playlist: InsertPlaylist & { userId: number }): Promise<Playlist>;
   updatePlaylist(id: number, playlist: Partial<InsertPlaylist>): Promise<Playlist | undefined>;
   deletePlaylist(id: number): Promise<boolean>;
 
@@ -225,7 +225,7 @@ export class MemStorage implements IStorage {
     };
   }
 
-  async createPlaylist(playlist: InsertPlaylist & { userId: number; criteria?: any }): Promise<Playlist> {
+  async createPlaylist(playlist: InsertPlaylist & { userId: number }): Promise<Playlist> {
     const newPlaylist: Playlist = {
       id: this.currentPlaylistId++,
       name: playlist.name,
@@ -238,12 +238,6 @@ export class MemStorage implements IStorage {
       isSpotifyLinked: playlist.isSpotifyLinked || null
     };
     this.playlists.set(newPlaylist.id, newPlaylist);
-    
-    // If criteria provided, auto-generate songs
-    if (playlist.criteria) {
-      await this.generatePlaylistSongs(newPlaylist.id, playlist.criteria);
-    }
-    
     return newPlaylist;
   }
 
@@ -353,102 +347,6 @@ export class MemStorage implements IStorage {
     return newArtist;
   }
 
-  private async generatePlaylistSongs(playlistId: number, criteria: any): Promise<void> {
-    const audioFeatures = (this as any).audioFeatures as Map<number, any>;
-    if (!audioFeatures) return;
-
-    // Get all available songs with audio features
-    const eligibleSongs: Array<{ song: Song, features: any }> = [];
-    
-    for (const [songId, song] of this.songs.entries()) {
-      const features = audioFeatures.get(songId);
-      if (!features) continue;
-      
-      let matches = true;
-      const { enabledCriteria } = criteria;
-      
-      // Check BPM range
-      if (enabledCriteria?.bpm && (features.bpm < criteria.bpm[0] || features.bpm > criteria.bpm[1])) {
-        matches = false;
-      }
-      
-      // Check energy range  
-      if (enabledCriteria?.energy && (features.energy < criteria.energy[0] || features.energy > criteria.energy[1])) {
-        matches = false;
-      }
-      
-      // Check danceability range
-      if (enabledCriteria?.danceability && (features.danceability < criteria.danceability[0] || features.danceability > criteria.danceability[1])) {
-        matches = false;
-      }
-      
-      // Check loudness range
-      if (enabledCriteria?.loudness && (features.loudness < criteria.loudness[0] || features.loudness > criteria.loudness[1])) {
-        matches = false;
-      }
-      
-      // Check valence range
-      if (enabledCriteria?.valence && (features.valence < criteria.valence[0] || features.valence > criteria.valence[1])) {
-        matches = false;
-      }
-      
-      // Check length range
-      if (enabledCriteria?.length && (song.duration < criteria.length[0] || song.duration > criteria.length[1])) {
-        matches = false;
-      }
-      
-      // Check acousticness range
-      if (enabledCriteria?.acousticness && (features.acousticness < criteria.acousticness[0] || features.acousticness > criteria.acousticness[1])) {
-        matches = false;
-      }
-      
-      // Check popularity range
-      if (enabledCriteria?.popularity && (features.popularity < criteria.popularity[0] || features.popularity > criteria.popularity[1])) {
-        matches = false;
-      }
-      
-      // Check genres
-      if (enabledCriteria?.genres && criteria.genres.length > 0) {
-        const hasMatchingGenre = criteria.genres.some((genre: string) => 
-          features.genres.includes(genre.toLowerCase())
-        );
-        if (!hasMatchingGenre) {
-          matches = false;
-        }
-      }
-      
-      if (matches) {
-        eligibleSongs.push({ song, features });
-      }
-    }
-    
-    // Shuffle and limit songs
-    const shuffled = eligibleSongs.sort(() => Math.random() - 0.5);
-    const selectedSongs = shuffled.slice(0, Math.min(25, shuffled.length)); // Max 25 songs
-    
-    // Apply artist separation if enabled
-    let finalSongs = selectedSongs;
-    if (criteria.artistSeparation) {
-      const seenArtists = new Set<string>();
-      finalSongs = selectedSongs.filter(({ song }) => {
-        if (seenArtists.has(song.artist)) {
-          return false;
-        }
-        seenArtists.add(song.artist);
-        return true;
-      });
-    }
-    
-    // Add songs to playlist
-    for (let i = 0; i < finalSongs.length; i++) {
-      const { song } = finalSongs[i];
-      await this.addSongToPlaylist({
-        playlistId,
-        songId: song.id,
-        position: i
-      });
-    }
-  }
 }
 
 export const storage = new MemStorage();

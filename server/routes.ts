@@ -34,14 +34,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/playlists", async (req, res) => {
     try {
-      // Extract criteria before validation, as it's not part of the playlist schema
-      const { criteria, ...playlistData } = req.body;
+      // Extract criteria and access token before validation
+      const { criteria, accessToken, ...playlistData } = req.body;
       const validatedData = insertPlaylistSchema.parse(playlistData);
+      
+      // Create the playlist first
       const playlist = await storage.createPlaylist({
         ...validatedData,
-        userId: defaultUserId,
-        criteria: criteria // Pass criteria for automatic generation
+        userId: defaultUserId
       });
+      
+      // If criteria provided, generate songs from user's library
+      if (criteria && accessToken) {
+        try {
+          await generateAutoPlaylist(playlist.id, criteria, accessToken);
+        } catch (error) {
+          console.error("Error generating automatic playlist:", error);
+          // Don't fail the playlist creation if auto-generation fails
+        }
+      }
+      
       res.status(201).json(playlist);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -50,6 +62,136 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to create playlist" });
     }
   });
+
+  // Helper function to generate automatic playlist using Spotify data
+  async function generateAutoPlaylist(playlistId: number, criteria: any, accessToken: string) {
+    try {
+      // Get user's library
+      const libraryResponse = await fetch(`http://localhost:5000/api/spotify/user-library`, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      });
+      
+      if (!libraryResponse.ok) throw new Error('Failed to fetch user library');
+      
+      const libraryData = await libraryResponse.json();
+      const userTracks = libraryData.tracks;
+      
+      // Get audio features for tracks (in batches)
+      const eligibleTracks = [];
+      const trackIds = userTracks.map((track: any) => track.id).slice(0, 100); // Limit to first 100 tracks
+      
+      if (trackIds.length > 0) {
+        const audioFeaturesResponse = await fetch(`https://api.spotify.com/v1/audio-features?ids=${trackIds.join(',')}`, {
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+        
+        if (audioFeaturesResponse.ok) {
+          const audioFeatures = await audioFeaturesResponse.json();
+          
+          // Filter tracks based on criteria
+          for (let i = 0; i < userTracks.length && i < audioFeatures.audio_features.length; i++) {
+            const track = userTracks[i];
+            const features = audioFeatures.audio_features[i];
+            
+            if (!features) continue;
+            
+            let matches = true;
+            const { enabledCriteria } = criteria;
+            
+            // Check each enabled criterion
+            if (enabledCriteria?.bpm && features.tempo && (features.tempo < criteria.bpm[0] || features.tempo > criteria.bpm[1])) {
+              matches = false;
+            }
+            
+            if (enabledCriteria?.energy && (features.energy < criteria.energy[0] || features.energy > criteria.energy[1])) {
+              matches = false;
+            }
+            
+            if (enabledCriteria?.danceability && (features.danceability < criteria.danceability[0] || features.danceability > criteria.danceability[1])) {
+              matches = false;
+            }
+            
+            if (enabledCriteria?.loudness && (features.loudness < criteria.loudness[0] || features.loudness > criteria.loudness[1])) {
+              matches = false;
+            }
+            
+            if (enabledCriteria?.valence && (features.valence < criteria.valence[0] || features.valence > criteria.valence[1])) {
+              matches = false;
+            }
+            
+            if (enabledCriteria?.length && track.duration_ms) {
+              const durationSeconds = track.duration_ms / 1000;
+              if (durationSeconds < criteria.length[0] || durationSeconds > criteria.length[1]) {
+                matches = false;
+              }
+            }
+            
+            if (enabledCriteria?.acousticness && (features.acousticness < criteria.acousticness[0] || features.acousticness > criteria.acousticness[1])) {
+              matches = false;
+            }
+            
+            if (enabledCriteria?.popularity && track.popularity && (track.popularity < criteria.popularity[0] || track.popularity > criteria.popularity[1])) {
+              matches = false;
+            }
+            
+            if (matches) {
+              eligibleTracks.push(track);
+            }
+          }
+        }
+      }
+      
+      // Shuffle and limit tracks
+      const shuffledTracks = eligibleTracks.sort(() => Math.random() - 0.5);
+      let selectedTracks = shuffledTracks.slice(0, Math.min(25, shuffledTracks.length));
+      
+      // Apply artist separation if enabled
+      if (criteria.artistSeparation) {
+        const seenArtists = new Set<string>();
+        selectedTracks = selectedTracks.filter(track => {
+          const artistName = track.artists[0]?.name;
+          if (seenArtists.has(artistName)) {
+            return false;
+          }
+          seenArtists.add(artistName);
+          return true;
+        });
+      }
+      
+      // Add selected tracks to the playlist
+      for (let i = 0; i < selectedTracks.length; i++) {
+        const track = selectedTracks[i];
+        
+        // First, ensure the song exists in our database
+        let song = await storage.getSongBySpotifyId(track.id);
+        if (!song) {
+          // Create the song if it doesn't exist
+          song = await storage.createSong({
+            title: track.name,
+            artist: track.artists.map((a: any) => a.name).join(', '),
+            album: track.album?.name || '',
+            duration: Math.round(track.duration_ms / 1000),
+            coverImage: track.album?.images?.[0]?.url || null,
+            audioUrl: null,
+            spotifyId: track.id,
+            previewUrl: track.preview_url
+          });
+        }
+        
+        // Add song to playlist
+        await storage.addSongToPlaylist({
+          playlistId,
+          songId: song.id,
+          position: i
+        });
+      }
+      
+      console.log(`Generated playlist with ${selectedTracks.length} tracks from ${userTracks.length} available tracks`);
+    } catch (error) {
+      console.error('Error in generateAutoPlaylist:', error);
+      throw error;
+    }
+  }
 
   app.patch("/api/playlists/:id", async (req, res) => {
     try {
@@ -430,6 +572,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error searching Spotify:", error);
       res.status(500).json({ message: "Failed to search Spotify" });
+    }
+  });
+
+  // Get user's complete song library for playlist generation
+  app.get("/api/spotify/user-library", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).json({ message: "No access token provided" });
+      }
+
+      const accessToken = authHeader.replace("Bearer ", "");
+      
+      // Get user's playlists
+      const userPlaylists = await spotifyService.getUserPlaylists(accessToken);
+      
+      // Get user's liked songs (first 50)
+      const likedSongs = await spotifyService.getLikedSongs(accessToken, 50, 0);
+      
+      // Combine all tracks from playlists and liked songs
+      const allTracks = [];
+      
+      // Add liked songs
+      for (const item of likedSongs.items) {
+        if (item.track) {
+          allTracks.push({
+            ...item.track,
+            source: 'liked',
+            added_at: item.added_at
+          });
+        }
+      }
+      
+      // Add songs from user's playlists (sample from each playlist to avoid too much data)
+      for (const playlist of userPlaylists.slice(0, 10)) { // Limit to first 10 playlists
+        try {
+          const playlistTracks = await spotifyService.getPlaylistTracks(accessToken, playlist.id, 20); // Limit to 20 songs per playlist
+          for (const item of playlistTracks.items) {
+            if (item.track && !allTracks.some(t => t.id === item.track.id)) {
+              allTracks.push({
+                ...item.track,
+                source: playlist.name,
+                added_at: item.added_at
+              });
+            }
+          }
+        } catch (error) {
+          console.log(`Skipping playlist ${playlist.name} due to error:`, error);
+        }
+      }
+      
+      res.json({
+        tracks: allTracks,
+        total: allTracks.length,
+        sources: {
+          liked_songs: likedSongs.items.length,
+          playlists: userPlaylists.length
+        }
+      });
+    } catch (error) {
+      console.error("Failed to fetch user library:", error);
+      res.status(500).json({ message: "Failed to fetch user library" });
     }
   });
 
