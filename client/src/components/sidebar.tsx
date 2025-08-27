@@ -17,7 +17,7 @@ export function Sidebar({ onCreatePlaylist }: SidebarProps) {
     queryKey: ["/api/playlists"],
   });
 
-  const { data: spotifyPlaylists } = useQuery({
+  const { data: spotifyPlaylists, isLoading, error } = useQuery({
     queryKey: ["/api/spotify/playlists"],
     enabled: !!accessToken,
   });

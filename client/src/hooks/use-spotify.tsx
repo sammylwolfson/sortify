@@ -36,16 +36,28 @@ export function SpotifyProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Check if there's a stored token in localStorage
     const storedToken = localStorage.getItem('spotify_access_token');
-    if (storedToken) {
-      // Validate the stored token
-      validateToken(storedToken).then(isValid => {
-        if (isValid) {
-          setAccessToken(storedToken);
-        } else {
-          // Token is invalid/expired, clear it
-          forceReconnect();
-        }
-      });
+    const tokenTimestamp = localStorage.getItem('spotify_token_timestamp');
+    
+    if (storedToken && tokenTimestamp) {
+      const tokenAge = Date.now() - parseInt(tokenTimestamp);
+      const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+      
+      // If token is less than 55 minutes old, use it (Spotify tokens expire after 1 hour)
+      if (tokenAge < (55 * 60 * 1000)) {
+        setAccessToken(storedToken);
+      } else {
+        // Token might be expired, validate it
+        validateToken(storedToken).then(isValid => {
+          if (isValid) {
+            setAccessToken(storedToken);
+            // Update timestamp since token is still valid
+            localStorage.setItem('spotify_token_timestamp', Date.now().toString());
+          } else {
+            // Token is invalid/expired, try to refresh or clear it
+            forceReconnect();
+          }
+        });
+      }
     }
 
     // Check if we're coming back from Spotify auth
@@ -75,6 +87,11 @@ export function SpotifyProvider({ children }: { children: ReactNode }) {
     setAccessToken(token);
     if (token) {
       localStorage.setItem('spotify_access_token', token);
+      localStorage.setItem('spotify_token_timestamp', Date.now().toString());
+    } else {
+      localStorage.removeItem('spotify_access_token');
+      localStorage.removeItem('spotify_token_timestamp');
+      localStorage.removeItem('spotify_refresh_token');
     } else {
       localStorage.removeItem('spotify_access_token');
     }

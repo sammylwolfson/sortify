@@ -221,10 +221,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             <script>
               localStorage.setItem('spotify_access_token', '${tokenData.access_token}');
               localStorage.setItem('spotify_user_name', '${userProfile.display_name}');
+              localStorage.setItem('spotify_token_timestamp', '${Date.now()}');
+              ${tokenData.refresh_token ? `localStorage.setItem('spotify_refresh_token', '${tokenData.refresh_token}');` : ''}
               window.opener?.postMessage({ 
                 type: 'SPOTIFY_AUTH_SUCCESS', 
                 token: '${tokenData.access_token}',
-                user: '${userProfile.display_name}'
+                user: '${userProfile.display_name}',
+                refreshToken: '${tokenData.refresh_token || ''}'
               }, '*');
               window.close();
             </script>
