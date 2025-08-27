@@ -10,11 +10,26 @@ A beautiful, Spotify-inspired playlist management web application built with mod
 ## ✨ Features
 
 - **Modern UI**: Spotify-inspired dark theme with smooth animations
+- **Spotify Integration**: Full Spotify Web API integration for music streaming
 - **Playlist Management**: Create, edit, and delete playlists
-- **Song Library**: Browse and search through a curated music collection
+- **Music Playback**: Control music playback with Spotify Web Player SDK
+- **Personalized Events**: View upcoming concerts from your followed Spotify artists
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Smart Sidebar**: Custom scrollable navigation with playlist management
 - **Real-time Search**: Instant search results with dropdown suggestions
-- **Artist Profiles**: Explore artist information and their music
+
+## 🔄 Recent Updates
+
+### UI/UX Improvements
+- **Fixed App Launch**: Resolved critical syntax errors in Spotify authentication that prevented startup
+- **Enhanced Sidebar**: Added custom scrollbar styling for smooth navigation through playlists
+- **Music Player Fix**: Repositioned bottom player bar to prevent overlap with sidebar
+- **Streamlined Navigation**: Removed redundant search button and duplicate scroll areas
+
+### New Features  
+- **Personalized Events**: 'Upcoming Events' now displays concerts from your followed Spotify artists
+- **Rich Event Cards**: Shows artist images, genres, venues, and dates with playlist creation options
+- **Spotify Integration**: Full Web API integration for authentication, playlists, and music data
 
 ## 🚀 Quick Start
 
@@ -29,12 +44,16 @@ A beautiful, Spotify-inspired playlist management web application built with mod
    npm install
    ```
 
-3. **Start the development server**
+3. **Set up Spotify API**
+   - Create a Spotify App in the Spotify Developer Dashboard
+   - Add your credentials to environment variables
+   
+4. **Start the development server**
    ```bash
    npm run dev
    ```
 
-4. **Open your browser**
+5. **Open your browser**
    ```
    Navigate to http://localhost:5000
    ```
@@ -43,10 +62,12 @@ A beautiful, Spotify-inspired playlist management web application built with mod
 
 - **Frontend**: React 18, TypeScript, Tailwind CSS, Radix UI
 - **Backend**: Node.js, Express, TypeScript
+- **Music API**: Spotify Web API & Web Playback SDK
 - **State Management**: TanStack Query (React Query)
-- **Routing**: Wouter
+- **Routing**: Wouter  
 - **Build Tool**: Vite
-- **Storage**: In-memory storage with sample data
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: Spotify OAuth
 
 ## 📁 Project Structure
 
