@@ -38,8 +38,10 @@ export default function PlaylistDetail() {
   if (isLoading) {
     return (
       <div className="flex h-screen bg-spotify-dark">
-        <Sidebar />
-        <div className="flex-1 flex items-center justify-center">
+        <div className="w-60 flex-shrink-0 fixed h-full z-10">
+          <Sidebar />
+        </div>
+        <div className="flex-1 ml-60 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-spotify-green mx-auto mb-4"></div>
             <p className="text-lg spotify-text">Loading playlist...</p>
@@ -52,8 +54,10 @@ export default function PlaylistDetail() {
   if (!playlist) {
     return (
       <div className="flex h-screen bg-spotify-dark">
-        <Sidebar />
-        <div className="flex-1 flex items-center justify-center">
+        <div className="w-60 flex-shrink-0 fixed h-full z-10">
+          <Sidebar />
+        </div>
+        <div className="flex-1 ml-60 flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Playlist not found</h1>
             <p className="spotify-text">The playlist you're looking for doesn't exist.</p>
@@ -67,9 +71,11 @@ export default function PlaylistDetail() {
 
   return (
     <div className="flex h-screen bg-spotify-dark text-white overflow-hidden">
-      <Sidebar />
+      <div className="w-60 flex-shrink-0 fixed h-full z-10">
+        <Sidebar />
+      </div>
       
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 ml-60 flex flex-col overflow-hidden">
         {/* Top Navigation */}
         <div className="bg-spotify-gray px-8 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">

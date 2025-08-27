@@ -74,8 +74,10 @@ export function SpotifyPlaylistDetail() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black text-white flex">
-        <Sidebar />
-        <div className="flex-1 flex flex-col ml-64">
+        <div className="w-60 flex-shrink-0 fixed h-full z-10">
+          <Sidebar />
+        </div>
+        <div className="flex-1 ml-60 flex flex-col">
           <div className="bg-listlab-gray border-b border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <SearchBar />
@@ -103,8 +105,10 @@ export function SpotifyPlaylistDetail() {
   if (!playlist) {
     return (
       <div className="min-h-screen bg-black text-white flex">
-        <Sidebar />
-        <div className="flex-1 flex flex-col ml-64">
+        <div className="w-60 flex-shrink-0 fixed h-full z-10">
+          <Sidebar />
+        </div>
+        <div className="flex-1 ml-60 flex flex-col">
           <div className="bg-listlab-gray border-b border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <SearchBar />
@@ -128,11 +132,12 @@ export function SpotifyPlaylistDetail() {
 
   return (
     <div className="min-h-screen bg-black text-white flex">
-      {/* Sidebar - Fixed */}
-      <Sidebar />
+      <div className="w-60 flex-shrink-0 fixed h-full z-10">
+        <Sidebar />
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col ml-64">
+      <div className="flex-1 ml-60 flex flex-col">
         {/* Top Bar */}
         <div className="bg-listlab-gray border-b border-gray-700 p-4">
           <div className="flex items-center justify-between">
