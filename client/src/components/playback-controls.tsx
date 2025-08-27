@@ -160,7 +160,7 @@ export function PlaybackControls() {
   };
 
   return (
-    <div className="playback-controls fixed bottom-0 left-0 right-0 bg-listlab-gray border-t border-gray-800 px-4 py-3">
+    <div className="playback-controls fixed bottom-0 left-60 right-0 bg-listlab-gray border-t border-gray-800 px-4 py-3">
       <div className="flex items-center justify-between">
         {/* Currently Playing */}
         <div className="flex items-center space-x-3 w-1/4 min-w-0">
