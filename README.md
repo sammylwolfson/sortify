@@ -1,131 +1,149 @@
-# ListLab - Modern Playlist Management
+📘 Sortify CLI – Local Playlist Organizer
 
-A beautiful, Spotify-inspired playlist management web application built with modern web technologies.
+Sortify includes a local Python tool that automatically organizes all your Spotify Liked Songs into 11 genre playlists using Spotify’s official Web API.
 
-![ListLab Preview](https://img.shields.io/badge/Status-Active-brightgreen)
-![React](https://img.shields.io/badge/React-18-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-Latest-blue)
-![Express](https://img.shields.io/badge/Express-Latest-green)
+This tool runs entirely on your computer, never stores your data, and requires no servers or deployments.
 
-## ✨ Features
+🚀 Features
 
-- **Modern UI**: Spotify-inspired dark theme with smooth animations
-- **Spotify Integration**: Full Spotify Web API integration for music streaming
-- **Playlist Management**: Create, edit, and delete playlists
-- **Music Playback**: Control music playback with Spotify Web Player SDK
-- **Personalized Events**: View upcoming concerts from your followed Spotify artists
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
-- **Smart Sidebar**: Custom scrollable navigation with playlist management
-- **Real-time Search**: Instant search results with dropdown suggestions
+Automatically scans all your Liked Songs
 
-## 🔄 Recent Updates
+Fetches artist genres from Spotify
 
-### UI/UX Improvements
-- **Fixed App Launch**: Resolved critical syntax errors in Spotify authentication that prevented startup
-- **Enhanced Sidebar**: Added custom scrollbar styling for smooth navigation through playlists
-- **Music Player Fix**: Repositioned bottom player bar to prevent overlap with sidebar
-- **Streamlined Navigation**: Removed redundant search button and duplicate scroll areas
+Sorts each track into one of 11 custom genre playlists
 
-### New Features  
-- **Personalized Events**: 'Upcoming Events' now displays concerts from your followed Spotify artists
-- **Rich Event Cards**: Shows artist images, genres, venues, and dates with playlist creation options
-- **Spotify Integration**: Full Web API integration for authentication, playlists, and music data
+Skips duplicates
 
-## 🚀 Quick Start
+Safe, private, and ToS-compliant
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/listlab.git
-   cd listlab
-   ```
+Works on macOS, Windows, and Linux
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+📦 Installation
+1. Clone the repo
+git clone https://github.com/sammylwolfson/sortify
+cd sortify
 
-3. **Set up Spotify API**
-   - Create a Spotify App in the Spotify Developer Dashboard
-   - Add your credentials to environment variables
-   
-4. **Start the development server**
-   ```bash
-   npm run dev
-   ```
+2. Install Python dependencies
+pip install -r requirements.txt
 
-5. **Open your browser**
-   ```
-   Navigate to http://localhost:5000
-   ```
 
-## 🛠️ Tech Stack
+(Use pip3 if needed.)
 
-- **Frontend**: React 18, TypeScript, Tailwind CSS, Radix UI
-- **Backend**: Node.js, Express, TypeScript
-- **Music API**: Spotify Web API & Web Playback SDK
-- **State Management**: TanStack Query (React Query)
-- **Routing**: Wouter  
-- **Build Tool**: Vite
-- **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: Spotify OAuth
+🔐 Spotify API Setup
 
-## 📁 Project Structure
+Sortify uses Spotify OAuth, so you must create a Spotify Developer App (free, takes 60 seconds).
 
-```
-listlab/
-├── client/                 # Frontend React application
-│   ├── src/
-│   │   ├── components/     # Reusable UI components
-│   │   ├── pages/          # Page components
-│   │   ├── lib/            # Utility functions
-│   │   └── hooks/          # Custom React hooks
-├── server/                 # Backend Express application
-│   ├── index.ts           # Server entry point
-│   ├── routes.ts          # API routes
-│   └── storage.ts         # Data storage interface
-├── shared/                 # Shared TypeScript types
-└── components.json         # Shadcn/ui configuration
-```
+1. Go to
 
-## 🎯 Available Scripts
+https://developer.spotify.com/dashboard
 
-- `npm run dev` - Start development server (frontend + backend)
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build locally
+2. Create a new app
 
-## 🎨 Design Features
+Name it anything (e.g., SortifyLocal).
 
-- **Dark Theme**: Sleek dark interface with green accent colors
-- **Responsive Layout**: Adaptive design for all screen sizes
-- **Smooth Animations**: Hover effects and transitions
-- **Modern Typography**: Clean, readable font hierarchy
-- **Accessible Components**: Built with Radix UI primitives
+3. Add this Redirect URI:
+http://localhost:8888/callback
 
-## 📝 API Endpoints
+4. Copy your:
 
-- `GET /api/playlists` - Retrieve all playlists
-- `POST /api/playlists` - Create a new playlist
-- `GET /api/playlists/:id` - Get specific playlist
-- `PATCH /api/playlists/:id` - Update playlist
-- `DELETE /api/playlists/:id` - Delete playlist
-- `GET /api/songs` - Get all songs
-- `GET /api/songs/search` - Search songs
-- `GET /api/artists` - Get all artists
+Client ID
 
-## 🤝 Contributing
+Client Secret
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+📝 Environment Variables
 
-## 📄 License
+Copy the example env file:
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+cp example.env .env
 
-## 🙏 Acknowledgments
 
-- Design inspiration from Spotify
-- Icons from Lucide React
-- UI components from Radix UI and shadcn/ui
+Open .env and fill in:
+
+SPOTIPY_CLIENT_ID=YOUR_CLIENT_ID
+SPOTIPY_CLIENT_SECRET=YOUR_CLIENT_SECRET
+SPOTIPY_REDIRECT_URI=http://localhost:8888/callback
+
+🎧 Create the 11 Genre Playlists
+
+Sortify requires these exact playlist names in your Spotify account:
+
+Electronic
+
+Dance / EDM
+
+House / Disco / Funk
+
+Hip Hop / Rap
+
+Trap / Bass
+
+Pop
+
+Alternative / Indie
+
+R&B / Soul / Blues / Jazz
+
+Chill / Downtempo
+
+Latin / Urbano
+
+Rock
+
+Create them once — Sortify will reuse them forever.
+
+▶️ Running the Sorter
+
+Just run:
+
+python3 sortify.py
+
+
+On the first run, your browser will open and ask you to log in to Spotify and approve the app.
+
+After that:
+
+Sortify fetches all your Liked Songs
+
+Determines each track’s genre
+
+Adds the track to the correct playlist
+
+Skips songs already sorted
+
+Prints live updates as it runs
+
+✔️ Example Output
+Authenticated as Spotify user: sammywolfson
+
+Found playlist: Electronic -> 3x...
+Found playlist: Dance / EDM -> 6A...
+...
+
+Total liked tracks fetched: 9,842
+Unique artists found: 2,311
+
+Added: Midnight City -> Electronic
+Added: Gucci Flip Flops -> Hip Hop / Rap
+Added: Stay With Me -> R&B / Soul / Blues / Jazz
+Skipped: Already in playlist
+...
+
+=== DONE ===
+Tracks added: 582
+Tracks skipped: 9260
+
+🛠 Troubleshooting
+
+Q: It says a playlist is missing.
+→ Check the spelling matches EXACTLY (case and spaces).
+
+Q: OAuth window didn’t open.
+→ Try running again or open the link printed in the terminal.
+
+Q: Genres seem wrong for some songs.
+→ Genre mapping can be customized in sortify.py.
+
+❤️ License
+
+You may license your project however you like.
+(MIT License recommended for open-source use.)

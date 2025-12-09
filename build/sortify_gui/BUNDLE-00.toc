@@ -1,0 +1,3 @@
+([('sortify_gui',
+   '/Users/sammy/projects/sortify/dist/sortify_gui',
+   'EXECUTABLE')],)
