@@ -15,6 +15,7 @@ def create_spotify_client():
         os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"),  # Script directory
     ]
     
+    # Try to load with python-dotenv
     loaded = False
     for env_path in env_paths:
         if os.path.exists(env_path):
@@ -25,22 +26,51 @@ def create_spotify_client():
     if not loaded:
         load_dotenv()  # Fallback to default behavior
     
+    # Also try manual parsing as fallback (for PyInstaller apps)
     client_id = os.getenv("SPOTIPY_CLIENT_ID")
     client_secret = os.getenv("SPOTIPY_CLIENT_SECRET")
     redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
+    
+    # If still not found, manually parse the .env file
+    if not client_id or not client_secret or not redirect_uri:
+        for env_path in env_paths:
+            if os.path.exists(env_path):
+                try:
+                    with open(env_path, 'r') as f:
+                        for line in f:
+                            line = line.strip()
+                            if line and not line.startswith('#') and '=' in line:
+                                key, value = line.split('=', 1)
+                                key = key.strip()
+                                value = value.strip()
+                                if key == "SPOTIPY_CLIENT_ID":
+                                    client_id = value
+                                elif key == "SPOTIPY_CLIENT_SECRET":
+                                    client_secret = value
+                                elif key == "SPOTIPY_REDIRECT_URI":
+                                    redirect_uri = value
+                    if client_id and client_secret and redirect_uri:
+                        break
+                except Exception:
+                    pass
     scope = (
         "user-library-read "
         "playlist-read-private "
         "playlist-modify-private "
         "playlist-modify-public"
     )
+    
+    # Use a cache path in the user's home directory for PyInstaller compatibility
+    cache_path = os.path.expanduser("~/.cache-sortify-gui")
+    
     auth_manager = SpotifyOAuth(
         client_id=client_id,
         client_secret=client_secret,
         redirect_uri=redirect_uri,
         scope=scope,
         open_browser=True,
-        cache_path=".cache-sortify-gui",
+        cache_path=cache_path,
+        show_dialog=False,  # Don't force re-authorization if token exists
     )
     return spotipy.Spotify(auth_manager=auth_manager)
 
@@ -76,17 +106,38 @@ class SortifyApp(tk.Tk):
 
     def login(self):
         try:
+            self.status_lbl.config(text="Authenticating...")
+            self.update()  # Force UI update
+            
             self.sp = create_spotify_client()
+            
+            self.status_lbl.config(text="Fetching user info...")
+            self.update()
+            
             user = self.sp.current_user()
             self.status_lbl.config(text=f"Logged in as: {user['display_name']}")
+            
+            self.status_lbl.config(text="Fetching playlists...")
+            self.update()
             self.fetch_playlists()
+            
+            self.status_lbl.config(text="Fetching liked tracks...")
+            self.update()
             self.fetch_liked_tracks()
-            # Removed group_tracks_by_genre and populate_tree; only showing liked songs
-            # self.sync_btn removed; syncing is now per-genre
+            
             self.refresh_btn.config(state="normal")
+            
+            self.status_lbl.config(text="Organizing songs...")
+            self.update()
             self.display_liked_songs()
+            
+            self.status_lbl.config(text=f"Logged in as: {user['display_name']} - Ready!")
         except Exception as e:
-            messagebox.showerror("Error", str(e))
+            import traceback
+            error_msg = f"Error: {str(e)}\n\nDetails:\n{traceback.format_exc()}"
+            print(error_msg)  # Print to console for debugging
+            messagebox.showerror("Login Error", str(e))
+            self.status_lbl.config(text="Login failed. Please try again.")
 
     def refresh_liked_songs(self):
         self.fetch_liked_tracks()
