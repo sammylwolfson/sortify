@@ -8,7 +8,23 @@ from spotipy.oauth2 import SpotifyOAuth
 
 # --- Spotify Auth ---
 def create_spotify_client():
-    load_dotenv()
+    # Try loading .env from multiple locations
+    env_paths = [
+        ".env",  # Current directory
+        os.path.expanduser("~/.sortify.env"),  # Home directory
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"),  # Script directory
+    ]
+    
+    loaded = False
+    for env_path in env_paths:
+        if os.path.exists(env_path):
+            load_dotenv(env_path)
+            loaded = True
+            break
+    
+    if not loaded:
+        load_dotenv()  # Fallback to default behavior
+    
     client_id = os.getenv("SPOTIPY_CLIENT_ID")
     client_secret = os.getenv("SPOTIPY_CLIENT_SECRET")
     redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
