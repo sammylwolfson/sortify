@@ -1,4 +1,26 @@
-📘 Sortify CLI – Local Playlist Organizer
+# 🎵 Sortify – Spotify Playlist Organizer
+
+Sortify is a **local desktop app** that helps you organize your Spotify Liked Songs into custom playlists by genre. It runs entirely on your computer, never stores your data, and is fully privacy-focused.
+
+## ✨ Features
+
+- 🎨 **Desktop GUI** – Clean, easy-to-use interface built with Tkinter
+- 🎵 **View all Liked Songs** – See your entire Spotify library with artist and genre info
+- 📊 **Group by Genre** – Automatically groups songs by their Spotify genres
+- 📁 **Custom Playlists** – Choose which playlist each genre's songs go to
+- 🔒 **Private & Secure** – Runs locally, uses official Spotify API, no data stored
+- 🖥️ **Standalone App** – Download and run without installing Python (macOS)
+
+## 📥 Download & Install
+
+### Option 1: Download the Standalone App (macOS only)
+
+1. **Download** `Sortify.app` from the [Releases](https://github.com/sammylwolfson/sortify/releases) page
+2. **Move** `Sortify.app` to your Applications folder
+3. **Create your credentials file** (see Setup below)
+4. **Run** the app by double-clicking `Sortify.app`
+
+### Option 2: Run from Source (All Platforms)cal Playlist Organizer
 
 Sortify includes a local Python tool that automatically organizes all your Spotify Liked Songs into 11 genre playlists using Spotify’s official Web API.
 
@@ -18,89 +40,151 @@ Safe, private, and ToS-compliant
 
 Works on macOS, Windows, and Linux
 
-📦 Installation
-1. Clone the repo
-git clone https://github.com/sammylwolfson/sortify
-cd sortify
+**Requirements:**
+- Python 3.12+ (download from [python.org](https://www.python.org/downloads/))
+- Git
 
-2. Install Python dependencies
-pip install -r requirements.txt
+**Steps:**
 
+1. **Clone the repo:**
+   ```bash
+   git clone https://github.com/sammylwolfson/sortify
+   cd sortify
+   ```
 
-(Use pip3 if needed.)
+2. **Install Python dependencies:**
+   ```bash
+   pip3 install -r requirements.txt
+   ```
 
-🔐 Spotify API Setup
+3. **Set up credentials** (see Setup below)
 
-Sortify uses Spotify OAuth, so you must create a Spotify Developer App (free, takes 60 seconds).
+4. **Run the app:**
+   ```bash
+   python3 sortify_gui.py
+   ```
 
-1. Go to
+## 🔐 Setup – Spotify API Credentials
 
-https://developer.spotify.com/dashboard
+Sortify uses the official Spotify Web API. You'll need to create a free Spotify Developer app:
 
-2. Create a new app
+### 1. Create a Spotify Developer App
 
-Name it anything (e.g., SortifyLocal).
+1. Go to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+2. Click **"Create app"**
+3. Fill in:
+   - **App name:** Sortify (or anything you like)
+   - **App description:** Personal playlist organizer
+   - **Redirect URI:** `http://127.0.0.1:8888/callback`
+   - Check the Terms of Service box
+4. Click **"Save"**
+5. Click **"Settings"** and copy your:
+   - **Client ID**
+   - **Client Secret** (click "View client secret")
 
-3. Add this Redirect URI:
-http://localhost:8888/callback
+### 2. Create Your Credentials File
 
-4. Copy your:
+**For Standalone App users:**
 
-Client ID
+Create a file at `~/.sortify.env` in your home directory with this content:
 
-Client Secret
+```bash
+SPOTIPY_CLIENT_ID=your_client_id_here
+SPOTIPY_CLIENT_SECRET=your_client_secret_here
+SPOTIPY_REDIRECT_URI=http://127.0.0.1:8888/callback
+```
 
-📝 Environment Variables
+**For Python users:**
 
-Copy the example env file:
+Copy the example file and edit it:
 
+```bash
 cp example.env .env
+```
+
+Then edit `.env` with your credentials:
+
+```bash
+SPOTIPY_CLIENT_ID=your_client_id_here
+SPOTIPY_CLIENT_SECRET=your_client_secret_here
+SPOTIPY_REDIRECT_URI=http://127.0.0.1:8888/callback
+```
+
+## � How to Use
+
+1. **Launch Sortify** (double-click `Sortify.app` or run `python3 sortify_gui.py`)
+
+2. **Click "Login to Spotify"** – A browser window will open for you to authorize the app
+
+3. **View your Liked Songs** – The app will fetch and display all your liked songs, grouped by genre
+
+4. **Choose playlists** – For each genre group:
+   - Select a target playlist from the dropdown
+   - Click **"Add All to Playlist"** to move those songs
+
+5. **Done!** – Your songs are now organized into your chosen playlists
+
+### Tips
+
+- You can use any existing playlists or create new ones in Spotify first
+- Songs without genre info will appear in "Unknown Genre"
+- Use the **"Refresh Liked Songs"** button to update after adding new songs
+- The app won't create duplicates – it's safe to run multiple times
+
+## 📂 File Structure
+
+```
+sortify/
+├── sortify_gui.py          # Main desktop app
+├── sortify.py              # Original CLI version
+├── requirements.txt        # Python dependencies
+├── example.env             # Environment template
+└── README.md              # This file
+```
 
 
-Open .env and fill in:
+## ❓ FAQ
 
-SPOTIPY_CLIENT_ID=YOUR_CLIENT_ID
-SPOTIPY_CLIENT_SECRET=YOUR_CLIENT_SECRET
-SPOTIPY_REDIRECT_URI=http://localhost:8888/callback
+**Q: Is this safe?**  
+A: Yes! Sortify uses the official Spotify Web API and runs entirely on your computer. No data is stored or sent anywhere.
 
-🎧 Create the 11 Genre Playlists
+**Q: Do I need to keep Python installed if I use the standalone app?**  
+A: No, the standalone `.app` includes everything you need.
 
-Sortify requires these exact playlist names in your Spotify account:
+**Q: Can I undo changes?**  
+A: Songs are copied, not moved. Your Liked Songs remain unchanged. You can manually remove songs from playlists in Spotify.
 
-Electronic
+**Q: Why do some songs show "Unknown Genre"?**  
+A: Some artists don't have genre tags in Spotify's database. You can still organize these manually.
 
-Dance / EDM
+**Q: Does this work on Windows/Linux?**  
+A: The Python version works everywhere. The standalone `.app` is macOS only for now.
 
-House / Disco / Funk
+## 🛠️ Troubleshooting
 
-Hip Hop / Rap
+**"No client_id" error:**  
+Make sure your `.sortify.env` file is in your home directory (`~/.sortify.env`) with the correct credentials.
 
-Trap / Bass
+**"Invalid redirect URI" error:**  
+In your Spotify Developer Dashboard, make sure you've added exactly: `http://127.0.0.1:8888/callback`
 
-Pop
+**Tkinter not found (Python users):**  
+Install Python from [python.org](https://www.python.org/downloads/) (not Homebrew) to get Tkinter support.
 
-Alternative / Indie
+## 📜 License
 
-R&B / Soul / Blues / Jazz
+MIT License – feel free to use, modify, and share!
 
-Chill / Downtempo
+## 🙏 Credits
 
-Latin / Urbano
+Built with ❤️ using:
+- [Spotipy](https://spotipy.readthedocs.io/) – Spotify Web API wrapper
+- [Tkinter](https://docs.python.org/3/library/tkinter.html) – Python GUI framework
+- [Spotify Web API](https://developer.spotify.com/documentation/web-api) – Official Spotify API
 
-Rock
+---
 
-Create them once — Sortify will reuse them forever.
-
-▶️ Running the Sorter
-
-Just run:
-
-python3 sortify.py
-
-
-On the first run, your browser will open and ask you to log in to Spotify and approve the app.
-
-After that:
+**Enjoy organizing your music! 🎶**
 
 Sortify fetches all your Liked Songs
 
