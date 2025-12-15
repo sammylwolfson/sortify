@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App Sandbox: required for App Store; keep minimal permissions for privacy-first design -->
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+
+    <!-- Allow outgoing network connections to call Spotify Web API -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+
+    <!-- Incoming network connections are optional and only needed if you sandbox the local listener.
+         For development you can enable this in Xcode if binding to 127.0.0.1 is blocked by sandboxing. -->
+    <key>com.apple.security.network.server</key>
+    <false/>
+
+    <!-- Not enabling file access or broad entitlements here; use App Sandbox and Application Support for cache files. -->
+</dict>
+</plist>
