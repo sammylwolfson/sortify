@@ -8,22 +8,21 @@
 
 /* Begin PBXFileReference section */
 		A5A303F82EF0B4A800ADE1D3 /* Sortify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sortify.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		111111111111111111111111 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/Models.swift; sourceTree = "<group>"; };
-		222222222222222222222222 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/KeychainStore.swift; sourceTree = "<group>"; };
-		333333333333333333333333 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/Notifications.swift; sourceTree = "<group>"; };
-		444444444444444444444444 /* CacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/CacheStore.swift; sourceTree = "<group>"; };
-		555555555555555555555555 /* RateLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/RateLimiter.swift; sourceTree = "<group>"; };
-		666666666666666666666666 /* ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/ToastManager.swift; sourceTree = "<group>"; };
-		777777777777777777777777 /* SortifyAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/SortifyAppApp.swift; sourceTree = "<group>"; };
-		888888888888888888888888 /* SpotifyAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/SpotifyAuth.swift; sourceTree = "<group>"; };
-		999999999999999999999999 /* SpotifyClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/SpotifyClient.swift; sourceTree = "<group>"; };
-	
-aaaaaaaaaaaaaaaaaaaaaaaa /* Views/ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/Views/ContentView.swift; sourceTree = "<group>"; };
-		bbbbbbbbbbbbbbbbbbbbbbbb /* Views/GenreRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/Views/GenreRow.swift; sourceTree = "<group>"; };
-		cccccccccccccccccccccccc /* Views/ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/Views/ToastView.swift; sourceTree = "<group>"; };
-		dddddddddddddddddddddddd /* Views/SignInModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/Views/SignInModal.swift; sourceTree = "<group>"; };
-		eeeeeeeeeeeeeeeeeeeeeeee /* Views/DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/Views/DashboardView.swift; sourceTree = "<group>"; };
-		ffffffffffffffffffffffff /* Views/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macos/Views/SettingsView.swift; sourceTree = "<group>"; };
+		111111111111111111111111 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Models.swift; sourceTree = "<group>"; };
+		222222222222222222222222 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/KeychainStore.swift; sourceTree = "<group>"; };
+		333333333333333333333333 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Notifications.swift; sourceTree = "<group>"; };
+		444444444444444444444444 /* CacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/CacheStore.swift; sourceTree = "<group>"; };
+		555555555555555555555555 /* RateLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/RateLimiter.swift; sourceTree = "<group>"; };
+		666666666666666666666666 /* ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/ToastManager.swift; sourceTree = "<group>"; };
+		777777777777777777777777 /* SortifyAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/SortifyAppApp.swift; sourceTree = "<group>"; };
+		888888888888888888888888 /* SpotifyAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/SpotifyAuth.swift; sourceTree = "<group>"; };
+		999999999999999999999999 /* SpotifyClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/SpotifyClient.swift; sourceTree = "<group>"; };
+		aaaaaaaaaaaaaaaaaaaaaaaa /* Views/ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/ContentView.swift; sourceTree = "<group>"; };
+		bbbbbbbbbbbbbbbbbbbbbbbb /* Views/GenreRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/GenreRow.swift; sourceTree = "<group>"; };
+		cccccccccccccccccccccccc /* Views/ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/ToastView.swift; sourceTree = "<group>"; };
+		dddddddddddddddddddddddd /* Views/SignInModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/SignInModal.swift; sourceTree = "<group>"; };
+		eeeeeeeeeeeeeeeeeeeeeeee /* Views/DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/DashboardView.swift; sourceTree = "<group>"; };
+		ffffffffffffffffffffffff /* Views/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/SettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
