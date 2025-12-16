@@ -10,10 +10,10 @@
     <key>com.apple.security.network.client</key>
     <true/>
 
-    <!-- Incoming network connections are optional and only needed if you sandbox the local listener.
-         For development you can enable this in Xcode if binding to 127.0.0.1 is blocked by sandboxing. -->
+    <!-- Incoming network connections are needed for the tiny local callback listener used during PKCE auth.
+        Enable this for development so the app can bind to 127.0.0.1:8888 and capture the OAuth callback. -->
     <key>com.apple.security.network.server</key>
-    <false/>
+    <true/>
 
     <!-- Not enabling file access or broad entitlements here; use App Sandbox and Application Support for cache files. -->
 </dict>

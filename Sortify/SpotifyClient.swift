@@ -317,7 +317,7 @@ final class SpotifyClient: ObservableObject {
                 genreMap["(Unknown)", default: []].append(t)
             }
         }
-        return genreMap.map { key, value in
+            return genreMap.map { key, value in
             let tracks = Array(Set(value))
             let mapped = ("").isEmpty ? nil : nil // placeholder
             return GenreGroup(name: key, tracks: tracks, mappedPlaylistId: nil)

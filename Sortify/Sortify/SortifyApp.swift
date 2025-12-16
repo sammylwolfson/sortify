@@ -4,6 +4,12 @@
 //
 //  Created by Sammy on 12/15/25.
 //
+//
+//  SortifyApp.swift
+//  Sortify
+//
+//  Created by Sammy on 12/15/25.
+//
 
 import SwiftUI
 import CoreData
@@ -11,11 +17,13 @@ import CoreData
 @main
 struct SortifyApp: App {
     let persistenceController = PersistenceController.shared
+    @StateObject private var auth = SpotifyAuth()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environmentObject(auth)
         }
     }
 }
