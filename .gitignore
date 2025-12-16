@@ -8,3 +8,22 @@ vite.config.ts.*
 .cache-sortify
 __pycache__/
 *.pyc
+
+# Xcode / macOS
+build/
+DerivedData/
+*.xcresult
+**/xcuserdata/
+*.xcuserstate
+*.xcuserdatad
+*.xcscmblueprint
+
+# Swift Package Manager
+.build/
+Packages/
+
+# CocoaPods
+Pods/
+
+# fastlane
+fastlane/report.xml
