@@ -10,6 +10,7 @@ import CoreData
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @EnvironmentObject var auth: SpotifyAuth
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
@@ -17,7 +18,9 @@ struct ContentView: View {
     private var items: FetchedResults<Item>
 
     var body: some View {
-        NavigationView {
+        Group {
+            if auth.isSignedIn {
+                NavigationView {
             List {
                 ForEach(items) { item in
                     NavigationLink {
@@ -27,8 +30,8 @@ struct ContentView: View {
                     }
                 }
                 .onDelete(perform: deleteItems)
-            }
-            .toolbar {
+                }
+                .toolbar {
 #if os(iOS)
                 ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()
@@ -40,7 +43,24 @@ struct ContentView: View {
                     }
                 }
             }
-            Text("Select an item")
+                Text("Select an item")
+            }
+            } else {
+                VStack(spacing: 16) {
+                    Text("Sortify — native macOS")
+                        .font(.title)
+                    Button("Sign in with Spotify") {
+                        Task {
+                            do {
+                                try await auth.signIn()
+                            } catch {
+                                print("Sign-in failed: \(error)")
+                            }
+                        }
+                    }
+                }
+                .padding()
+            }
         }
     }
 
@@ -84,5 +104,7 @@ private let itemFormatter: DateFormatter = {
 }()
 
 #Preview {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    ContentView()
+        .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        .environmentObject(SpotifyAuth())
 }

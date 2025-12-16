@@ -221,11 +221,13 @@ final class SpotifyClient: ObservableObject {
     // Helper to get current access token from Keychain (used by internal calls)
     private func currentAccessToken() throws -> String {
         // Deprecated: prefer using SpotifyAuth.getValidAccessToken(). Kept for compatibility.
-        if let data = try? KeychainStore.load(key: tokenKey), let d = data {
-            let decoder = JSONDecoder()
-            let t = try decoder.decode(Token.self, from: d)
-            if t.expiresAt > Date().timeIntervalSince1970 { return t.accessToken }
-            throw ClientError.unauthorized
+        do {
+            if let token = try KeychainStore.loadToken(key: "sortify.spotify.token") {
+                if token.expiresAt > Date().timeIntervalSince1970 { return token.accessToken }
+                throw ClientError.unauthorized
+            }
+        } catch {
+            // ignore and fall through to not authenticated
         }
         throw ClientError.notAuthenticated
     }
@@ -319,7 +321,6 @@ final class SpotifyClient: ObservableObject {
         }
             return genreMap.map { key, value in
             let tracks = Array(Set(value))
-            let mapped = ("").isEmpty ? nil : nil // placeholder
             return GenreGroup(name: key, tracks: tracks, mappedPlaylistId: nil)
         }.sorted { $0.name < $1.name }
     }

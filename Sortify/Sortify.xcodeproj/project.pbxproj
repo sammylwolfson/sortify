@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		A5A303F82EF0B4A800ADE1D3 /* Sortify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sortify.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A555BE0D2EF1CDEE0033F424 /* Sortify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sortify.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -29,22 +29,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A555BE0E2EF1CDEE0033F424 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A555BE0D2EF1CDEE0033F424 /* Sortify.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		A5A303EF2EF0B4A800ADE1D3 = {
 			isa = PBXGroup;
 			children = (
 				A5A303FA2EF0B4A800ADE1D3 /* Sortify */,
-				A5A303F92EF0B4A800ADE1D3 /* Products */,
+				A555BE0E2EF1CDEE0033F424 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-				CODE_SIGN_ENTITLEMENTS = "Sortify-App.entitlements";
-			isa = PBXGroup;
-			children = (
-				A5A303F82EF0B4A800ADE1D3 /* Sortify.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-				CODE_SIGN_ENTITLEMENTS = "Sortify-App.entitlements";
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -67,7 +67,7 @@
 			packageProductDependencies = (
 			);
 			productName = Sortify;
-			productReference = A5A303F82EF0B4A800ADE1D3 /* Sortify.app */;
+			productReference = A555BE0D2EF1CDEE0033F424 /* Sortify.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -95,7 +95,7 @@
 			mainGroup = A5A303EF2EF0B4A800ADE1D3;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = A5A303F92EF0B4A800ADE1D3 /* Products */;
+			productRefGroup = A555BE0E2EF1CDEE0033F424 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -244,6 +244,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Sortify-App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
@@ -278,7 +279,6 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 26.2;
-				CODE_SIGN_ENTITLEMENTS = "Sortify-App.entitlements";
 			};
 			name = Debug;
 		};
@@ -287,6 +287,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Sortify-App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
@@ -321,7 +322,6 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 26.2;
-				CODE_SIGN_ENTITLEMENTS = "Sortify-App.entitlements";
 			};
 			name = Release;
 		};

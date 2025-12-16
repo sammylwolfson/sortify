@@ -15,8 +15,8 @@
 		555555555555555555555555 /* RateLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/RateLimiter.swift; sourceTree = "<group>"; };
 		666666666666666666666666 /* ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/ToastManager.swift; sourceTree = "<group>"; };
 		777777777777777777777777 /* SortifyAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/SortifyAppApp.swift; sourceTree = "<group>"; };
-		888888888888888888888888 /* SpotifyAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/SpotifyAuth.swift; sourceTree = "<group>"; };
-		999999999999999999999999 /* SpotifyClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/SpotifyClient.swift; sourceTree = "<group>"; };
+		888888888888888888888888 /* SpotifyAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuth.swift; sourceTree = "<group>"; };
+		999999999999999999999999 /* SpotifyClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyClient.swift; sourceTree = "<group>"; };
 		aaaaaaaaaaaaaaaaaaaaaaaa /* Views/ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/ContentView.swift; sourceTree = "<group>"; };
 		bbbbbbbbbbbbbbbbbbbbbbbb /* Views/GenreRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/GenreRow.swift; sourceTree = "<group>"; };
 		cccccccccccccccccccccccc /* Views/ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/ToastView.swift; sourceTree = "<group>"; };
@@ -321,6 +321,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 26.2;
 				CODE_SIGN_ENTITLEMENTS = "Sortify-App.entitlements";

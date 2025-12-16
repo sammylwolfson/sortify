@@ -1,0 +1,45 @@
+import Foundation
+
+// Minimal models used by the skeleton (duplicate placed in nested runtime folder so the target compiles)
+struct Token: Codable {
+    var accessToken: String
+    var refreshToken: String?
+    var expiresAt: TimeInterval
+    var scope: String?
+    var tokenType: String?
+
+    enum CodingKeys: String, CodingKey {
+        case accessToken = "access_token"
+        case refreshToken = "refresh_token"
+        case expiresAt = "expires_at"
+        case scope
+        case tokenType = "token_type"
+    }
+}
+
+struct Track: Identifiable, Codable, Hashable {
+    var id: String
+    var name: String
+    var artistIds: [String]
+    var artistNames: [String]
+    var albumName: String?
+    var uri: String
+}
+
+struct Artist: Codable {
+    var id: String
+    var name: String
+    var genres: [String]
+}
+
+struct Playlist: Identifiable, Codable {
+    var id: String
+    var name: String
+}
+
+struct GenreGroup: Identifiable {
+    var id: String { name }
+    var name: String
+    var tracks: [Track]
+    var mappedPlaylistId: String?
+}
