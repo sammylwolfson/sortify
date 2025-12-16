@@ -37,14 +37,14 @@
 			);
 			sourceTree = "<group>";
 		};
-		A5A303F92EF0B4A800ADE1D3 /* Products */ = {
+				CODE_SIGN_ENTITLEMENTS = "Sortify-App.entitlements";
 			isa = PBXGroup;
 			children = (
 				A5A303F82EF0B4A800ADE1D3 /* Sortify.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
-		};
+				CODE_SIGN_ENTITLEMENTS = "Sortify-App.entitlements";
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -278,7 +278,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 26.2;
-				CODE_SIGN_ENTITLEMENTS = "Sortify/Sortify-App.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Sortify-App.entitlements";
 			};
 			name = Debug;
 		};
@@ -321,7 +321,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 26.2;
-				CODE_SIGN_ENTITLEMENTS = "Sortify/Sortify-App.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Sortify-App.entitlements";
 			};
 			name = Release;
 		};
