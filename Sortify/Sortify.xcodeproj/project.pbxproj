@@ -278,7 +278,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 26.2;
-				CODE_SIGN_ENTITLEMENTS = "SORTIFY/Sortify-App.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Sortify/Sortify-App.entitlements";
 			};
 			name = Debug;
 		};
@@ -321,7 +321,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 26.2;
-				CODE_SIGN_ENTITLEMENTS = "SORTIFY/Sortify-App.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Sortify/Sortify-App.entitlements";
 			};
 			name = Release;
 		};
