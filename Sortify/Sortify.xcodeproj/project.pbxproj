@@ -6,20 +6,55 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		BE0000012EF5000000000001 /* CacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000012EF5000000000001 /* CacheStore.swift */; };
+		BE0000022EF5000000000001 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000022EF5000000000001 /* Errors.swift */; };
+		BE0000032EF5000000000001 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000032EF5000000000001 /* KeychainStore.swift */; };
+		BE0000042EF5000000000001 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000042EF5000000000001 /* Models.swift */; };
+		BE0000052EF5000000000001 /* NetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000052EF5000000000001 /* NetworkClient.swift */; };
+		BE0000062EF5000000000001 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000062EF5000000000001 /* Notifications.swift */; };
+		BE0000072EF5000000000001 /* RateLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000072EF5000000000001 /* RateLimiter.swift */; };
+		BE0000082EF5000000000001 /* SortifyAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000082EF5000000000001 /* SortifyAppApp.swift */; };
+		BE0000092EF5000000000001 /* SpotifyAPIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000092EF5000000000001 /* SpotifyAPIModels.swift */; };
+		BE00000A2EF5000000000001 /* SpotifyAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE10000A2EF5000000000001 /* SpotifyAuth.swift */; };
+		BE00000B2EF5000000000001 /* SpotifyClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE10000B2EF5000000000001 /* SpotifyClient.swift */; };
+		BE00000C2EF5000000000001 /* ToastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE10000C2EF5000000000001 /* ToastManager.swift */; };
+		BE00000D2EF5000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE10000D2EF5000000000001 /* ContentView.swift */; };
+		BE00000E2EF5000000000001 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE10000E2EF5000000000001 /* DashboardView.swift */; };
+		BE00000F2EF5000000000001 /* GenreRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE10000F2EF5000000000001 /* GenreRow.swift */; };
+		BE0000102EF5000000000001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000102EF5000000000001 /* SettingsView.swift */; };
+		BE0000112EF5000000000001 /* SignInModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000112EF5000000000001 /* SignInModal.swift */; };
+		BE0000122EF5000000000001 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000122EF5000000000001 /* ToastView.swift */; };
+		BE0000132EF5000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE1000132EF5000000000001 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
-		A555BE0D2EF1CDEE0033F424 /* Sortify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sortify.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE0001002EF5000000000001 /* Sortify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sortify.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE1000012EF5000000000001 /* CacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheStore.swift; sourceTree = SOURCE_ROOT; };
+		BE1000022EF5000000000001 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = SOURCE_ROOT; };
+		BE1000032EF5000000000001 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = SOURCE_ROOT; };
+		BE1000042EF5000000000001 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = SOURCE_ROOT; };
+		BE1000052EF5000000000001 /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClient.swift; sourceTree = SOURCE_ROOT; };
+		BE1000062EF5000000000001 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = SOURCE_ROOT; };
+		BE1000072EF5000000000001 /* RateLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateLimiter.swift; sourceTree = SOURCE_ROOT; };
+		BE1000082EF5000000000001 /* SortifyAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortifyAppApp.swift; sourceTree = SOURCE_ROOT; };
+		BE1000092EF5000000000001 /* SpotifyAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAPIModels.swift; sourceTree = SOURCE_ROOT; };
+		BE10000A2EF5000000000001 /* SpotifyAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuth.swift; sourceTree = SOURCE_ROOT; };
+		BE10000B2EF5000000000001 /* SpotifyClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyClient.swift; sourceTree = SOURCE_ROOT; };
+		BE10000C2EF5000000000001 /* ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastManager.swift; sourceTree = SOURCE_ROOT; };
+		BE10000D2EF5000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		BE10000E2EF5000000000001 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		BE10000F2EF5000000000001 /* GenreRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreRow.swift; sourceTree = "<group>"; };
+		BE1000102EF5000000000001 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		BE1000112EF5000000000001 /* SignInModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInModal.swift; sourceTree = "<group>"; };
+		BE1000122EF5000000000001 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		BE1000132EF5000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		BE1000142EF5000000000001 /* Sortify-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Sortify-Info.plist"; sourceTree = SOURCE_ROOT; };
+		BE1000152EF5000000000001 /* Sortify-App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Sortify-App.entitlements"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		A5A303FA2EF0B4A800ADE1D3 /* Sortify */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Sortify;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
-
 /* Begin PBXFrameworksBuildPhase section */
-		A5A303F52EF0B4A800ADE1D3 /* Frameworks */ = {
+		BE2000012EF5000000000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -29,107 +64,149 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A555BE0E2EF1CDEE0033F424 /* Products */ = {
+		BE3000012EF5000000000001 = {
 			isa = PBXGroup;
 			children = (
-				A555BE0D2EF1CDEE0033F424 /* Sortify.app */,
+				BE3000022EF5000000000001 /* Sortify */,
+				BE4000012EF5000000000001 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BE3000022EF5000000000001 /* Sortify */ = {
+			isa = PBXGroup;
+			children = (
+				BE1000132EF5000000000001 /* Assets.xcassets */,
+				BE5000012EF5000000000001 /* Views */,
+				BE1000012EF5000000000001 /* CacheStore.swift */,
+				BE1000022EF5000000000001 /* Errors.swift */,
+				BE1000032EF5000000000001 /* KeychainStore.swift */,
+				BE1000042EF5000000000001 /* Models.swift */,
+				BE1000052EF5000000000001 /* NetworkClient.swift */,
+				BE1000062EF5000000000001 /* Notifications.swift */,
+				BE1000072EF5000000000001 /* RateLimiter.swift */,
+				BE1000082EF5000000000001 /* SortifyAppApp.swift */,
+				BE1000092EF5000000000001 /* SpotifyAPIModels.swift */,
+				BE10000A2EF5000000000001 /* SpotifyAuth.swift */,
+				BE10000B2EF5000000000001 /* SpotifyClient.swift */,
+				BE10000C2EF5000000000001 /* ToastManager.swift */,
+				BE1000142EF5000000000001 /* Sortify-Info.plist */,
+				BE1000152EF5000000000001 /* Sortify-App.entitlements */,
+			);
+			sourceTree = "<group>";
+		};
+		BE4000012EF5000000000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BE0001002EF5000000000001 /* Sortify.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		A5A303EF2EF0B4A800ADE1D3 = {
+		BE5000012EF5000000000001 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				A5A303FA2EF0B4A800ADE1D3 /* Sortify */,
-				A555BE0E2EF1CDEE0033F424 /* Products */,
+				BE10000D2EF5000000000001 /* ContentView.swift */,
+				BE10000E2EF5000000000001 /* DashboardView.swift */,
+				BE10000F2EF5000000000001 /* GenreRow.swift */,
+				BE1000102EF5000000000001 /* SettingsView.swift */,
+				BE1000112EF5000000000001 /* SignInModal.swift */,
+				BE1000122EF5000000000001 /* ToastView.swift */,
 			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A5A303F72EF0B4A800ADE1D3 /* Sortify */ = {
+		BE7000012EF5000000000001 /* Sortify */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A5A304082EF0B4A900ADE1D3 /* Build configuration list for PBXNativeTarget "Sortify" */;
+			buildConfigurationList = BE9000012EF5000000000001 /* Build configuration list for PBXNativeTarget "Sortify" */;
 			buildPhases = (
-				A5A303F42EF0B4A800ADE1D3 /* Sources */,
-				A5A303F52EF0B4A800ADE1D3 /* Frameworks */,
-				A5A303F62EF0B4A800ADE1D3 /* Resources */,
+				BE8000012EF5000000000001 /* Sources */,
+				BE2000012EF5000000000001 /* Frameworks */,
+				BE8000022EF5000000000001 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				A5A303FA2EF0B4A800ADE1D3 /* Sortify */,
-			);
 			name = Sortify;
-			packageProductDependencies = (
-			);
 			productName = Sortify;
-			productReference = A555BE0D2EF1CDEE0033F424 /* Sortify.app */;
+			productReference = BE0001002EF5000000000001 /* Sortify.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		A5A303F02EF0B4A800ADE1D3 /* Project object */ = {
+		BE7000022EF5000000000001 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
-				TargetAttributes = {
-					A5A303F72EF0B4A800ADE1D3 = {
-						CreatedOnToolsVersion = 26.2;
-					};
-				};
 			};
-			buildConfigurationList = A5A303F32EF0B4A800ADE1D3 /* Build configuration list for PBXProject "Sortify" */;
+			buildConfigurationList = BE7000032EF5000000000001 /* Build configuration list for PBXProject "Sortify" */;
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = A5A303EF2EF0B4A800ADE1D3;
-			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
-			productRefGroup = A555BE0E2EF1CDEE0033F424 /* Products */;
+			mainGroup = BE3000012EF5000000000001;
+			productRefGroup = BE4000012EF5000000000001 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A5A303F72EF0B4A800ADE1D3 /* Sortify */,
+				BE7000012EF5000000000001 /* Sortify */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		A5A303F62EF0B4A800ADE1D3 /* Resources */ = {
+		BE8000022EF5000000000001 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE0000132EF5000000000001 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A5A303F42EF0B4A800ADE1D3 /* Sources */ = {
+		BE8000012EF5000000000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE0000012EF5000000000001 /* CacheStore.swift in Sources */,
+				BE0000022EF5000000000001 /* Errors.swift in Sources */,
+				BE0000032EF5000000000001 /* KeychainStore.swift in Sources */,
+				BE0000042EF5000000000001 /* Models.swift in Sources */,
+				BE0000052EF5000000000001 /* NetworkClient.swift in Sources */,
+				BE0000062EF5000000000001 /* Notifications.swift in Sources */,
+				BE0000072EF5000000000001 /* RateLimiter.swift in Sources */,
+				BE0000082EF5000000000001 /* SortifyAppApp.swift in Sources */,
+				BE0000092EF5000000000001 /* SpotifyAPIModels.swift in Sources */,
+				BE00000A2EF5000000000001 /* SpotifyAuth.swift in Sources */,
+				BE00000B2EF5000000000001 /* SpotifyClient.swift in Sources */,
+				BE00000C2EF5000000000001 /* ToastManager.swift in Sources */,
+				BE00000D2EF5000000000001 /* ContentView.swift in Sources */,
+				BE00000E2EF5000000000001 /* DashboardView.swift in Sources */,
+				BE00000F2EF5000000000001 /* GenreRow.swift in Sources */,
+				BE0000102EF5000000000001 /* SettingsView.swift in Sources */,
+				BE0000112EF5000000000001 /* SignInModal.swift in Sources */,
+				BE0000122EF5000000000001 /* ToastView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		A5A304062EF0B4A900ADE1D3 /* Debug */ = {
+		BE7000042EF5000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -186,11 +263,10 @@
 			};
 			name = Debug;
 		};
-		A5A304072EF0B4A900ADE1D3 /* Release */ = {
+		BE7000052EF5000000000001 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -239,7 +315,7 @@
 			};
 			name = Release;
 		};
-		A5A304092EF0B4A900ADE1D3 /* Debug */ = {
+		BE9000022EF5000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -250,39 +326,27 @@
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
-				GENERATE_INFOPLIST_FILE = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Sortify-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 26.1;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourname.Sortify;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
-				SDKROOT = auto;
+				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = macosx;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 26.2;
+				TARGETED_DEVICE_FAMILY = 6;
 			};
 			name = Debug;
 		};
-		A5A3040A2EF0B4A900ADE1D3 /* Release */ = {
+		BE9000032EF5000000000001 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -293,60 +357,48 @@
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
-				GENERATE_INFOPLIST_FILE = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Sortify-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 26.1;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourname.Sortify;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
-				SDKROOT = auto;
+				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = macosx;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 26.2;
+				TARGETED_DEVICE_FAMILY = 6;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A5A303F32EF0B4A800ADE1D3 /* Build configuration list for PBXProject "Sortify" */ = {
+		BE7000032EF5000000000001 /* Build configuration list for PBXProject "Sortify" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A5A304062EF0B4A900ADE1D3 /* Debug */,
-				A5A304072EF0B4A900ADE1D3 /* Release */,
+				BE7000042EF5000000000001 /* Debug */,
+				BE7000052EF5000000000001 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A5A304082EF0B4A900ADE1D3 /* Build configuration list for PBXNativeTarget "Sortify" */ = {
+		BE9000012EF5000000000001 /* Build configuration list for PBXNativeTarget "Sortify" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A5A304092EF0B4A900ADE1D3 /* Debug */,
-				A5A3040A2EF0B4A900ADE1D3 /* Release */,
+				BE9000022EF5000000000001 /* Debug */,
+				BE9000032EF5000000000001 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = A5A303F02EF0B4A800ADE1D3 /* Project object */;
+	rootObject = BE7000022EF5000000000001 /* Project object */;
 }

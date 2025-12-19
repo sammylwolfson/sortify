@@ -1,1 +1,0 @@
-([('Sortify', '/Users/sammy/projects/sortify/dist/Sortify', 'EXECUTABLE')],)

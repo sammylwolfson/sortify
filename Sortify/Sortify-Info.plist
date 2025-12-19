@@ -5,7 +5,7 @@
 	<key>CFBundleName</key>
 	<string>Sortify</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.example.Sortify</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 
 	<!-- Set this to your Spotify Client ID (no secret). -->
 	<key>SortifySpotifyClientID</key>
