@@ -11,6 +11,7 @@ final class SpotifyClient: ObservableObject {
     @Published var lastError: Error?
 
     private let baseURL = "https://api.spotify.com/v1"
+    private let tokenKey = "sortify.spotify.token"
     // single NetworkClient instance per SpotifyClient (created when auth is set)
     private var networkClient: NetworkClient? = nil
 
@@ -43,7 +44,6 @@ final class SpotifyClient: ObservableObject {
                 self.isLoading = true
 
                 // fetch saved tracks via Codable responses
-                let url = URL(string: "\(baseURL)/me/tracks?limit=50&offset=0")!
                 var allTracks: [Track] = []
                 var offset = 0
                 let limit = 50
@@ -221,10 +221,8 @@ final class SpotifyClient: ObservableObject {
     // Helper to get current access token from Keychain (used by internal calls)
     private func currentAccessToken() throws -> String {
         // Deprecated: prefer using SpotifyAuth.getValidAccessToken(). Kept for compatibility.
-        if let data = try? KeychainStore.load(key: tokenKey), let d = data {
-            let decoder = JSONDecoder()
-            let t = try decoder.decode(Token.self, from: d)
-            if t.expiresAt > Date().timeIntervalSince1970 { return t.accessToken }
+        if let token = try? KeychainStore.loadToken(key: tokenKey) {
+            if token.expiresAt > Date().timeIntervalSince1970 { return token.accessToken }
             throw ClientError.unauthorized
         }
         throw ClientError.notAuthenticated
@@ -317,10 +315,11 @@ final class SpotifyClient: ObservableObject {
                 genreMap["(Unknown)", default: []].append(t)
             }
         }
-            return genreMap.map { key, value in
-            let tracks = Array(Set(value))
-            let mapped = ("").isEmpty ? nil : nil // placeholder
-            return GenreGroup(name: key, tracks: tracks, mappedPlaylistId: nil)
-        }.sorted { $0.name < $1.name }
+        return genreMap.map { key, value in
+            var deduped = [String: Track]()
+            for track in value { deduped[track.id] = track }
+            return GenreGroup(name: key, tracks: Array(deduped.values), mappedPlaylistId: nil)
+        }
+        .sorted { $0.name < $1.name }
     }
 }
