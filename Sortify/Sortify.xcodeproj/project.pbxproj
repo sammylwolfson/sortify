@@ -13,7 +13,6 @@
 		BE0000042EF5000000000001 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000042EF5000000000001 /* Models.swift */; };
 		BE0000052EF5000000000001 /* NetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000052EF5000000000001 /* NetworkClient.swift */; };
 		BE0000062EF5000000000001 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000062EF5000000000001 /* Notifications.swift */; };
-		BE0000072EF5000000000001 /* RateLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000072EF5000000000001 /* RateLimiter.swift */; };
 		BE0000082EF5000000000001 /* SortifyAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000082EF5000000000001 /* SortifyAppApp.swift */; };
 		BE0000092EF5000000000001 /* SpotifyAPIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000092EF5000000000001 /* SpotifyAPIModels.swift */; };
 		BE00000A2EF5000000000001 /* SpotifyAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE10000A2EF5000000000001 /* SpotifyAuth.swift */; };
@@ -36,7 +35,6 @@
 		BE1000042EF5000000000001 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = SOURCE_ROOT; };
 		BE1000052EF5000000000001 /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClient.swift; sourceTree = SOURCE_ROOT; };
 		BE1000062EF5000000000001 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = SOURCE_ROOT; };
-		BE1000072EF5000000000001 /* RateLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateLimiter.swift; sourceTree = SOURCE_ROOT; };
 		BE1000082EF5000000000001 /* SortifyAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortifyAppApp.swift; sourceTree = SOURCE_ROOT; };
 		BE1000092EF5000000000001 /* SpotifyAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAPIModels.swift; sourceTree = SOURCE_ROOT; };
 		BE10000A2EF5000000000001 /* SpotifyAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuth.swift; sourceTree = SOURCE_ROOT; };
@@ -83,7 +81,6 @@
 				BE1000042EF5000000000001 /* Models.swift */,
 				BE1000052EF5000000000001 /* NetworkClient.swift */,
 				BE1000062EF5000000000001 /* Notifications.swift */,
-				BE1000072EF5000000000001 /* RateLimiter.swift */,
 				BE1000082EF5000000000001 /* SortifyAppApp.swift */,
 				BE1000092EF5000000000001 /* SpotifyAPIModels.swift */,
 				BE10000A2EF5000000000001 /* SpotifyAuth.swift */,
@@ -185,7 +182,6 @@
 				BE0000042EF5000000000001 /* Models.swift in Sources */,
 				BE0000052EF5000000000001 /* NetworkClient.swift in Sources */,
 				BE0000062EF5000000000001 /* Notifications.swift in Sources */,
-				BE0000072EF5000000000001 /* RateLimiter.swift in Sources */,
 				BE0000082EF5000000000001 /* SortifyAppApp.swift in Sources */,
 				BE0000092EF5000000000001 /* SpotifyAPIModels.swift in Sources */,
 				BE00000A2EF5000000000001 /* SpotifyAuth.swift in Sources */,

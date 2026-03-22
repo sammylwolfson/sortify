@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 
+@MainActor
 final class SpotifyClient: ObservableObject {
     // ref to auth so we can request tokens when sending requests
     weak var auth: SpotifyAuth?
@@ -11,7 +12,6 @@ final class SpotifyClient: ObservableObject {
     @Published var lastError: Error?
 
     private let baseURL = "https://api.spotify.com/v1"
-    private let tokenKey = "sortify.spotify.token"
     // single NetworkClient instance per SpotifyClient (created when auth is set)
     private var networkClient: NetworkClient? = nil
 
@@ -35,61 +35,17 @@ final class SpotifyClient: ObservableObject {
 
     // Fetch saved tracks (paginated)
     func fetchLikedSongsAndGroup(auth: SpotifyAuth, completion: @escaping (Result<Void, Error>) -> Void) {
-        isLoading = true
         lastError = nil
-
         Task {
             do {
-                guard let network = self.networkClient else { throw ClientError.notAuthenticated }
-                self.isLoading = true
-
-                // fetch saved tracks via Codable responses
-                var allTracks: [Track] = []
-                var offset = 0
-                let limit = 50
-                while true {
-                    let pageURL = URL(string: "\(baseURL)/me/tracks?limit=\(limit)&offset=\(offset)")!
-                    let page: SavedTracksResponse = try await network.send(pageURL)
-                    for item in page.items {
-                        if let tr = item.track {
-                            let t = Track(id: tr.id, name: tr.name, artistIds: tr.artists.compactMap { $0.id }, artistNames: tr.artists.compactMap { $0.name }, albumName: tr.album?.name, uri: tr.uri)
-                            allTracks.append(t)
-                        }
-                    }
-                    if page.items.count < limit { break }
-                    offset += limit
-                }
-
-                // gather artist ids and fetch artists in batches
-                let artistIds = Array(Set(allTracks.flatMap { $0.artistIds }))
-                var allArtists: [Artist] = []
-                let artistChunkSize = 50
-                let idChunks = stride(from: 0, to: artistIds.count, by: artistChunkSize).map { Array(artistIds[$0..<min(artistIds.count, $0+artistChunkSize)]) }
-                for chunk in idChunks {
-                    let idsParam = chunk.joined(separator: ",")
-                    let artistsURL = URL(string: "\(baseURL)/artists?ids=\(idsParam)")!
-                        let resp: ArtistsResponse = try await network.send(artistsURL)
-                    for a in resp.artists {
-                        allArtists.append(Artist(id: a.id, name: a.name, genres: a.genres))
-                    }
-                }
-
-                let groups = Self.groupTracksByGenre(tracks: allTracks, artists: allArtists)
-                let mapped = groups.map { g -> GenreGroup in
-                    var copy = g
-                    copy.mappedPlaylistId = self.playlistMapping[g.name]
-                    return copy
-                }
+                let groups = try await fetchLikedSongsAndGroupAsync()
                 DispatchQueue.main.async {
-                    self.genreGroups = mapped
-                    try? self.cache.save(tracks: allTracks, artists: allArtists)
-                    self.isLoading = false
+                    self.genreGroups = groups
                     completion(.success(()))
                 }
             } catch {
                 DispatchQueue.main.async {
                     self.lastError = error
-                    self.isLoading = false
                     completion(.failure(error))
                 }
             }
@@ -177,7 +133,11 @@ final class SpotifyClient: ObservableObject {
             copy.mappedPlaylistId = self.playlistMapping[g.name]
             return copy
         }
-        try? self.cache.save(tracks: tracks, artists: artists)
+        do {
+            try self.cache.save(tracks: tracks, artists: artists)
+        } catch {
+            print("[Sortify] Warning: failed to save cache: \(error)")
+        }
         return mapped
     }
 
@@ -188,7 +148,11 @@ final class SpotifyClient: ObservableObject {
     }
 
     func savePlaylistMapping() {
-        try? cache.savePlaylistMapping(map: playlistMapping)
+        do {
+            try cache.savePlaylistMapping(map: playlistMapping)
+        } catch {
+            print("[Sortify] Warning: failed to save playlist mapping: \(error)")
+        }
     }
 
     func setMapping(genre: String, playlistId: String?) {
@@ -215,83 +179,6 @@ final class SpotifyClient: ObservableObject {
                 throw ClientError.httpError(code: http.statusCode)
             }
             progress?(i + 1, total)
-        }
-    }
-
-    // Helper to get current access token from Keychain (used by internal calls)
-    private func currentAccessToken() throws -> String {
-        // Deprecated: prefer using SpotifyAuth.getValidAccessToken(). Kept for compatibility.
-        if let token = try? KeychainStore.loadToken(key: tokenKey) {
-            if token.expiresAt > Date().timeIntervalSince1970 { return token.accessToken }
-            throw ClientError.unauthorized
-        }
-        throw ClientError.notAuthenticated
-    }
-
-    /// Send a request with retries. Handles 401 by asking auth to refresh, 429 by honoring Retry-After, and 5xx with exponential backoff.
-    private func sendRequest(url: URL, method: String = "GET", body: Data? = nil, accessToken: String, allowRefresh: Bool = true) async throws -> (Data, URLResponse) {
-        var req = URLRequest(url: url)
-        req.httpMethod = method
-        req.httpBody = body
-        if body != nil { req.setValue("application/json", forHTTPHeaderField: "Content-Type") }
-        req.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-
-        let maxRetries = 4
-        var attempt = 0
-        var didRefresh = false
-
-        while true {
-            do {
-                let (data, resp) = try await URLSession.shared.data(for: req)
-                if let http = resp as? HTTPURLResponse {
-                    switch http.statusCode {
-                    case 200...299:
-                        return (data, resp)
-                    case 401:
-                        // try refresh once
-                        if allowRefresh, !didRefresh, let auth = self.auth {
-                            didRefresh = true
-                            let newToken = try await auth.getValidAccessToken()
-                            req.setValue("Bearer \(newToken)", forHTTPHeaderField: "Authorization")
-                            // retry immediately
-                            attempt += 1
-                            if attempt > maxRetries { throw ClientError.unauthorized }
-                            continue
-                        }
-                        throw ClientError.unauthorized
-                    case 429:
-                        // Rate limited: respect Retry-After header if present
-                        var wait: TimeInterval = pow(2.0, Double(min(attempt, 6)))
-                        if let ra = http.value(forHTTPHeaderField: "Retry-After"), let raSec = Double(ra) {
-                            wait = raSec
-                        }
-                        // notify UI with wait time
-                        NotificationCenter.default.post(name: .spotifyRateLimited, object: wait)
-                        attempt += 1
-                        if attempt > maxRetries { throw ClientError.httpError(code: http.statusCode) }
-                        try await Task.sleep(nanoseconds: UInt64(wait * 1_000_000_000))
-                        continue
-                    case 500...599:
-                        // server error -> backoff and retry
-                        attempt += 1
-                        if attempt > maxRetries { throw ClientError.httpError(code: http.statusCode) }
-                        let backoff = pow(2.0, Double(attempt))
-                        try await Task.sleep(nanoseconds: UInt64(backoff * 1_000_000_000))
-                        continue
-                    default:
-                        throw ClientError.httpError(code: http.statusCode)
-                    }
-                } else {
-                    return (data, resp)
-                }
-            } catch {
-                // Network/transport error: retry with backoff up to maxRetries
-                attempt += 1
-                if attempt > maxRetries { throw error }
-                let backoff = pow(2.0, Double(attempt))
-                try await Task.sleep(nanoseconds: UInt64(backoff * 1_000_000_000))
-                continue
-            }
         }
     }
 
