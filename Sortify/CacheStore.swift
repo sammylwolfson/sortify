@@ -57,4 +57,28 @@ final class CacheStore {
         let map = try JSONDecoder().decode([String: String].self, from: data)
         return map
     }
+
+    // Dismissed suggestions persistence
+    private var dismissedURL: URL? {
+        let fm = FileManager.default
+        if let appSupport = try? fm.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
+            let dir = appSupport.appendingPathComponent("Sortify", isDirectory: true)
+            try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+            return dir.appendingPathComponent("dismissed-suggestions.json")
+        }
+        return nil
+    }
+
+    func saveDismissedSuggestions(_ ids: Set<String>) throws {
+        guard let url = dismissedURL else { return }
+        let data = try JSONEncoder().encode(Array(ids))
+        try data.write(to: url)
+    }
+
+    func loadDismissedSuggestions() throws -> Set<String>? {
+        guard let url = dismissedURL else { return nil }
+        let data = try Data(contentsOf: url)
+        let arr = try JSONDecoder().decode([String].self, from: data)
+        return Set(arr)
+    }
 }

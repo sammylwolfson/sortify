@@ -25,6 +25,8 @@
 		BE0000112EF5000000000001 /* SignInModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000112EF5000000000001 /* SignInModal.swift */; };
 		BE0000122EF5000000000001 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000122EF5000000000001 /* ToastView.swift */; };
 		BE0000132EF5000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE1000132EF5000000000001 /* Assets.xcassets */; };
+		BE0000142EF5000000000001 /* SuggestionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000162EF5000000000001 /* SuggestionEngine.swift */; };
+		BE0000152EF5000000000001 /* SuggestionBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000172EF5000000000001 /* SuggestionBadge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +51,8 @@
 		BE1000132EF5000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		BE1000142EF5000000000001 /* Sortify-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Sortify-Info.plist"; sourceTree = SOURCE_ROOT; };
 		BE1000152EF5000000000001 /* Sortify-App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Sortify-App.entitlements"; sourceTree = SOURCE_ROOT; };
+		BE1000162EF5000000000001 /* SuggestionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionEngine.swift; sourceTree = SOURCE_ROOT; };
+		BE1000172EF5000000000001 /* SuggestionBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionBadge.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +89,7 @@
 				BE1000092EF5000000000001 /* SpotifyAPIModels.swift */,
 				BE10000A2EF5000000000001 /* SpotifyAuth.swift */,
 				BE10000B2EF5000000000001 /* SpotifyClient.swift */,
+				BE1000162EF5000000000001 /* SuggestionEngine.swift */,
 				BE10000C2EF5000000000001 /* ToastManager.swift */,
 				BE1000142EF5000000000001 /* Sortify-Info.plist */,
 				BE1000152EF5000000000001 /* Sortify-App.entitlements */,
@@ -107,6 +112,7 @@
 				BE10000F2EF5000000000001 /* GenreRow.swift */,
 				BE1000102EF5000000000001 /* SettingsView.swift */,
 				BE1000112EF5000000000001 /* SignInModal.swift */,
+				BE1000172EF5000000000001 /* SuggestionBadge.swift */,
 				BE1000122EF5000000000001 /* ToastView.swift */,
 			);
 			path = Views;
@@ -193,6 +199,8 @@
 				BE0000102EF5000000000001 /* SettingsView.swift in Sources */,
 				BE0000112EF5000000000001 /* SignInModal.swift in Sources */,
 				BE0000122EF5000000000001 /* ToastView.swift in Sources */,
+				BE0000142EF5000000000001 /* SuggestionEngine.swift in Sources */,
+				BE0000152EF5000000000001 /* SuggestionBadge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

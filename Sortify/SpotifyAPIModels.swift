@@ -20,6 +20,7 @@ struct TrackResponse: Decodable {
 
 struct AlbumResponse: Decodable {
     let name: String?
+    let release_date: String?
 }
 
 struct ArtistSummary: Decodable {
