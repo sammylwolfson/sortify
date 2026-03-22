@@ -80,10 +80,16 @@ struct SuggestionEngine {
         let tokensA = Set(tokenize(a))
         let tokensB = Set(tokenize(b))
 
-        // Word-stem Jaccard (weight 0.6)
+        // Word-stem Jaccard (weight 0.5)
         let intersection = tokensA.intersection(tokensB)
         let union = tokensA.union(tokensB)
         let wordSimilarity = union.isEmpty ? 0.0 : Double(intersection.count) / Double(union.count)
+
+        // Substring containment boost (weight 0.1): catches "rock" ⊂ "indie rock"
+        // or "hip hop" ⊂ "underground hip hop" even when Jaccard is low.
+        let nameA = a.lowercased()
+        let nameB = b.lowercased()
+        let substringBoost: Double = (nameA != nameB && (nameA.contains(nameB) || nameB.contains(nameA))) ? 1.0 : 0.0
 
         // Co-occurrence Jaccard (weight 0.4)
         let artistsA = coOccurrence[a] ?? []
@@ -92,7 +98,7 @@ struct SuggestionEngine {
         let coUnion = artistsA.union(artistsB)
         let coSimilarity = coUnion.isEmpty ? 0.0 : Double(coIntersection.count) / Double(coUnion.count)
 
-        return 0.6 * wordSimilarity + 0.4 * coSimilarity
+        return 0.5 * wordSimilarity + 0.1 * substringBoost + 0.4 * coSimilarity
     }
 
     // MARK: - Smart Name Generation
@@ -142,7 +148,7 @@ struct SuggestionEngine {
 
         // Filter out decade tokens like "1990s", "2010s", "unknown"
         return parts.filter { token in
-            if token.hasSuffix("s"), let year = Int(token.dropLast()), year >= 190, year <= 209 {
+            if token.hasSuffix("s"), let year = Int(token.dropLast()), year >= 1900, year <= 2099 {
                 return false
             }
             if token == "unknown" || token == "decade" { return false }

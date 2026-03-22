@@ -23,6 +23,7 @@
 		Bffffffffffffffffffffffff /* Sortify/Views/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ffffffffffffffffffffffff /* Sortify/Views/SettingsView.swift */; };
 		B0A0A0A0A0A0A0A0A0A0A0A0 /* Sortify/SuggestionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A0A0A0A0A0A0A0A0A0A0A0 /* Sortify/SuggestionEngine.swift */; };
 		B0B0B0B0B0B0B0B0B0B0B0B0 /* Sortify/Views/SuggestionBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C0C0C0C0C0C0C0C0C0C0C0 /* Sortify/Views/SuggestionBadge.swift */; };
+		D0D0D0D0D0D0D0D0D0D0D0D0 /* Sortify/Views/SuggestionsOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0E0E0E0E0E0E0E0E0E0E0E0 /* Sortify/Views/SuggestionsOverview.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		ffffffffffffffffffffffff /* Sortify/Views/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/SettingsView.swift; sourceTree = "<group>"; };
 		A0A0A0A0A0A0A0A0A0A0A0A0 /* Sortify/SuggestionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/SuggestionEngine.swift; sourceTree = "<group>"; };
 		C0C0C0C0C0C0C0C0C0C0C0C0 /* Sortify/Views/SuggestionBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/SuggestionBadge.swift; sourceTree = "<group>"; };
+		E0E0E0E0E0E0E0E0E0E0E0E0 /* Sortify/Views/SuggestionsOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/SuggestionsOverview.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -92,6 +94,7 @@
 				eeeeeeeeeeeeeeeeeeeeeeee /* Sortify/Views/DashboardView.swift */,
 				ffffffffffffffffffffffff /* Sortify/Views/SettingsView.swift */,
 				C0C0C0C0C0C0C0C0C0C0C0C0 /* Sortify/Views/SuggestionBadge.swift */,
+				E0E0E0E0E0E0E0E0E0E0E0E0 /* Sortify/Views/SuggestionsOverview.swift */,
 				A5A303F92EF0B4A800ADE1D3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -200,6 +203,7 @@
 				Bffffffffffffffffffffffff /* Sortify/Views/SettingsView.swift in Sources */,
 				B0A0A0A0A0A0A0A0A0A0A0A0 /* Sortify/SuggestionEngine.swift in Sources */,
 				B0B0B0B0B0B0B0B0B0B0B0B0 /* Sortify/Views/SuggestionBadge.swift in Sources */,
+				D0D0D0D0D0D0D0D0D0D0D0D0 /* Sortify/Views/SuggestionsOverview.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
