@@ -189,10 +189,11 @@ final class SortifyTests: XCTestCase {
             "indie pop": Set(["a1", "a2", "a4"]),
         ]
         let score = SuggestionEngine.genreSimilarity("indie rock", "indie pop", coOccurrence: coOccurrence)
-        // word: {"indie","rock"} vs {"indie","pop"} -> 1/3 -> 0.6 * 0.333 = 0.2
+        // word: {"indie","rock"} vs {"indie","pop"} -> 1/3 -> 0.5 * 0.333 = 0.167
+        // substring: no containment -> 0
         // co: {a1,a2,a3} vs {a1,a2,a4} -> 2/4 = 0.5 -> 0.4 * 0.5 = 0.2
-        // total = 0.4
-        XCTAssertGreaterThanOrEqual(score, 0.4)
+        // total ≈ 0.367
+        XCTAssertGreaterThanOrEqual(score, 0.35)
     }
 
     func testGenreSimilarityUnrelated() {
@@ -258,12 +259,13 @@ final class SortifyTests: XCTestCase {
             GenreGroup(name: "indie rock", tracks: tracks1, mappedPlaylistId: nil),
             GenreGroup(name: "alternative rock", tracks: tracks2, mappedPlaylistId: nil),
         ]
-        // Build artists that share genres to boost co-occurrence
+        // Build artists that share genres to boost co-occurrence above threshold
         let artists = [
             Artist(id: "a1", name: "A1", genres: ["indie rock", "alternative rock"]),
             Artist(id: "a2", name: "A2", genres: ["indie rock", "alternative rock"]),
-            Artist(id: "a3", name: "A3", genres: ["indie rock"]),
-            Artist(id: "a4", name: "A4", genres: ["alternative rock"]),
+            Artist(id: "a3", name: "A3", genres: ["indie rock", "alternative rock"]),
+            Artist(id: "a4", name: "A4", genres: ["indie rock"]),
+            Artist(id: "a5", name: "A5", genres: ["alternative rock"]),
         ]
 
         let suggestions = SuggestionEngine.combineSuggestions(groups: groups, artists: artists)
@@ -274,6 +276,44 @@ final class SortifyTests: XCTestCase {
         } else {
             XCTFail("Expected combineGenres suggestion")
         }
+    }
+
+    // MARK: - Tokenize decade filtering bug fix
+
+    func testTokenizeFiltersFullDecadeTokens() {
+        // "1990s" should be filtered out as a decade token (bug fix: was checking 190-209 instead of 1900-2099)
+        let tokens = SuggestionEngine.tokenize("1990s rock")
+        XCTAssertEqual(tokens, ["rock"])
+    }
+
+    func testTokenizeFilters2010sDecadeToken() {
+        let tokens = SuggestionEngine.tokenize("2010s electronic")
+        XCTAssertEqual(tokens, ["electronic"])
+    }
+
+    func testTokenizePreservesNonDecadeTokens() {
+        let tokens = SuggestionEngine.tokenize("indie rock")
+        XCTAssertEqual(Set(tokens), Set(["indie", "rock"]))
+    }
+
+    // MARK: - Substring containment similarity boost
+
+    func testSimilaritySubstringBoost() {
+        // "rock" is a substring of "indie rock" — should get a containment boost
+        let coOccurrence: [String: Set<String>] = [:]
+        let score = SuggestionEngine.genreSimilarity("rock", "indie rock", coOccurrence: coOccurrence)
+        // Without boost: Jaccard {"rock"} vs {"indie","rock"} = 1/2 -> 0.5 * 0.5 = 0.25
+        // With boost: + 0.1 * 1.0 = 0.35
+        XCTAssertGreaterThanOrEqual(score, 0.35)
+    }
+
+    func testSimilarityNoSubstringBoostForIdenticalNames() {
+        // Identical names should not get substring boost (they'd match perfectly on Jaccard already)
+        let coOccurrence: [String: Set<String>] = [:]
+        let score = SuggestionEngine.genreSimilarity("rock", "rock", coOccurrence: coOccurrence)
+        // Jaccard = 1.0, substring boost = 0 (names are equal), co-occurrence = 0
+        // 0.5 * 1.0 + 0.1 * 0.0 + 0.4 * 0.0 = 0.5
+        XCTAssertEqual(score, 0.5, accuracy: 0.01)
     }
 
     // MARK: - Co-occurrence map test

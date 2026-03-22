@@ -27,6 +27,7 @@
 		BE0000132EF5000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE1000132EF5000000000001 /* Assets.xcassets */; };
 		BE0000142EF5000000000001 /* SuggestionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000162EF5000000000001 /* SuggestionEngine.swift */; };
 		BE0000152EF5000000000001 /* SuggestionBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000172EF5000000000001 /* SuggestionBadge.swift */; };
+		BE0000162EF5000000000001 /* SuggestionsOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1000182EF5000000000001 /* SuggestionsOverview.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +54,7 @@
 		BE1000152EF5000000000001 /* Sortify-App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Sortify-App.entitlements"; sourceTree = SOURCE_ROOT; };
 		BE1000162EF5000000000001 /* SuggestionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionEngine.swift; sourceTree = SOURCE_ROOT; };
 		BE1000172EF5000000000001 /* SuggestionBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionBadge.swift; sourceTree = "<group>"; };
+		BE1000182EF5000000000001 /* SuggestionsOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionsOverview.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +115,7 @@
 				BE1000102EF5000000000001 /* SettingsView.swift */,
 				BE1000112EF5000000000001 /* SignInModal.swift */,
 				BE1000172EF5000000000001 /* SuggestionBadge.swift */,
+				BE1000182EF5000000000001 /* SuggestionsOverview.swift */,
 				BE1000122EF5000000000001 /* ToastView.swift */,
 			);
 			path = Views;
@@ -201,6 +204,7 @@
 				BE0000122EF5000000000001 /* ToastView.swift in Sources */,
 				BE0000142EF5000000000001 /* SuggestionEngine.swift in Sources */,
 				BE0000152EF5000000000001 /* SuggestionBadge.swift in Sources */,
+				BE0000162EF5000000000001 /* SuggestionsOverview.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

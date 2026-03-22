@@ -42,6 +42,10 @@ struct DashboardView: View {
                     }
                     .padding(.vertical, 4)
                 }
+                Section {
+                    SuggestionsOverview()
+                }
+
                 Section(header: Text("Genres")) {
                     if client.genreGroups.isEmpty {
                         Text("No genres yet. Tap \u{201C}Fetch Liked Songs\u{201D} after signing in.")

@@ -283,6 +283,29 @@ final class SpotifyClient: ObservableObject {
         self.suggestions = grouped
     }
 
+    // MARK: - Suggestion Summary
+
+    /// All active suggestions across all genres, flattened.
+    var allSuggestions: [Suggestion] {
+        suggestions.values.flatMap { $0 }
+    }
+
+    /// Count of create-playlist suggestions.
+    var createSuggestionCount: Int {
+        allSuggestions.filter {
+            if case .createPlaylist = $0 { return true }
+            return false
+        }.count
+    }
+
+    /// Count of combine-genre suggestions.
+    var combineSuggestionCount: Int {
+        allSuggestions.filter {
+            if case .combineGenres = $0 { return true }
+            return false
+        }.count
+    }
+
     // MARK: - Grouping
 
     static func groupTracks(tracks: [Track], artists: [Artist], mode: GroupingMode) -> [GenreGroup] {
