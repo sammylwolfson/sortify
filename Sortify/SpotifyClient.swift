@@ -10,6 +10,10 @@ final class SpotifyClient: ObservableObject {
     @Published var genreGroups: [GenreGroup] = []
     @Published var isLoading = false
     @Published var lastError: Error?
+    @Published var suggestions: [String: [Suggestion]] = [:]
+    @Published var groupingMode: GroupingMode = .genreOnly {
+        didSet { regroupFromCache() }
+    }
 
     private let baseURL = "https://api.spotify.com/v1"
     // single NetworkClient instance per SpotifyClient (created when auth is set)
@@ -24,13 +28,26 @@ final class SpotifyClient: ObservableObject {
     // in-memory mapping of genre -> playlistId
     private(set) var playlistMapping: [String: String] = [:]
 
+    // Cached data for re-grouping without network calls
+    private var cachedTracks: [Track] = []
+    private var cachedArtists: [Artist] = []
+
+    // Dismissed suggestion IDs
+    private var dismissedSuggestionIds: Set<String> = []
+
     init() {
         if let cached = try? cache.loadCachedTracks() {
+            self.cachedTracks = cached.tracks
+            self.cachedArtists = cached.artists
             self.genreGroups = Self.groupTracksByGenre(tracks: cached.tracks, artists: cached.artists)
         }
         if let map = try? cache.loadPlaylistMapping() {
             self.playlistMapping = map
         }
+        if let dismissed = try? cache.loadDismissedSuggestions() {
+            self.dismissedSuggestionIds = dismissed
+        }
+        recomputeSuggestions()
     }
 
     // Fetch saved tracks (paginated)
@@ -63,7 +80,7 @@ final class SpotifyClient: ObservableObject {
             let page: SavedTracksResponse = try await network.send(pageURL)
             for item in page.items {
                 if let tr = item.track {
-                    let t = Track(id: tr.id, name: tr.name, artistIds: tr.artists.compactMap { $0.id }, artistNames: tr.artists.compactMap { $0.name }, albumName: tr.album?.name, uri: tr.uri)
+                    let t = Track(id: tr.id, name: tr.name, artistIds: tr.artists.compactMap { $0.id }, artistNames: tr.artists.compactMap { $0.name }, albumName: tr.album?.name, releaseDate: tr.album?.release_date, uri: tr.uri)
                     tracks.append(t)
                 }
             }
@@ -127,7 +144,12 @@ final class SpotifyClient: ObservableObject {
         let tracks = try await fetchSavedTracksPaged(network: network)
         let artistIds = Array(Set(tracks.flatMap { $0.artistIds }))
         let artists = try await fetchArtistsBatch(ids: artistIds, network: network)
-        let groups = Self.groupTracksByGenre(tracks: tracks, artists: artists)
+
+        // Cache for re-grouping
+        self.cachedTracks = tracks
+        self.cachedArtists = artists
+
+        let groups = Self.groupTracks(tracks: tracks, artists: artists, mode: groupingMode)
         let mapped = groups.map { g -> GenreGroup in
             var copy = g
             copy.mappedPlaylistId = self.playlistMapping[g.name]
@@ -138,6 +160,7 @@ final class SpotifyClient: ObservableObject {
         } catch {
             print("[Sortify] Warning: failed to save cache: \(error)")
         }
+        recomputeSuggestions()
         return mapped
     }
 
@@ -162,6 +185,7 @@ final class SpotifyClient: ObservableObject {
             playlistMapping.removeValue(forKey: genre)
         }
         savePlaylistMapping()
+        recomputeSuggestions()
     }
 
     /// Add tracks to playlist in chunks. Optionally report progress via closure (completedChunks, totalChunks).
@@ -179,6 +203,94 @@ final class SpotifyClient: ObservableObject {
                 throw ClientError.httpError(code: http.statusCode)
             }
             progress?(i + 1, total)
+        }
+    }
+
+    // MARK: - Playlist Creation
+
+    /// Create a new playlist on Spotify and return it.
+    func createPlaylistOnSpotify(name: String) async throws -> Playlist {
+        guard let network = self.networkClient else { throw ClientError.notAuthenticated }
+        let url = URL(string: "\(baseURL)/me/playlists")!
+        let bodyDict: [String: Any] = ["name": name, "public": false]
+        let body = try JSONSerialization.data(withJSONObject: bodyDict)
+        let (data, resp) = try await network.sendRaw(url: url, method: "POST", body: body)
+        if let http = resp as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
+            throw ClientError.httpError(code: http.statusCode)
+        }
+        let created = try JSONDecoder().decode(PlaylistItem.self, from: data)
+        let playlist = Playlist(id: created.id, name: created.name)
+        self.playlists.append(playlist)
+        return playlist
+    }
+
+    // MARK: - Suggestion Actions
+
+    func acceptCreatePlaylist(genreName: String, suggestedName: String) async throws {
+        let playlist = try await createPlaylistOnSpotify(name: suggestedName)
+        setMapping(genre: genreName, playlistId: playlist.id)
+    }
+
+    func acceptCombineGenres(genre1: String, genre2: String, targetPlaylistId: String) {
+        setMapping(genre: genre1, playlistId: targetPlaylistId)
+        setMapping(genre: genre2, playlistId: targetPlaylistId)
+    }
+
+    func dismissSuggestion(id: String) {
+        dismissedSuggestionIds.insert(id)
+        do {
+            try cache.saveDismissedSuggestions(dismissedSuggestionIds)
+        } catch {
+            print("[Sortify] Warning: failed to save dismissed suggestions: \(error)")
+        }
+        recomputeSuggestions()
+    }
+
+    // MARK: - Regrouping
+
+    private func regroupFromCache() {
+        guard !cachedTracks.isEmpty else { return }
+        let groups = Self.groupTracks(tracks: cachedTracks, artists: cachedArtists, mode: groupingMode)
+        self.genreGroups = groups.map { g -> GenreGroup in
+            var copy = g
+            copy.mappedPlaylistId = self.playlistMapping[g.name]
+            return copy
+        }
+        recomputeSuggestions()
+    }
+
+    private func recomputeSuggestions() {
+        let newPlaylist = SuggestionEngine.newPlaylistSuggestions(
+            groups: genreGroups,
+            playlistMapping: playlistMapping
+        )
+        let combine = SuggestionEngine.combineSuggestions(
+            groups: genreGroups,
+            artists: cachedArtists
+        )
+        let all = newPlaylist + combine
+
+        var grouped: [String: [Suggestion]] = [:]
+        for s in all {
+            guard !dismissedSuggestionIds.contains(s.id) else { continue }
+            switch s {
+            case .createPlaylist(let genreName, _, _):
+                grouped[genreName, default: []].append(s)
+            case .combineGenres(let g1, _, _, _):
+                grouped[g1, default: []].append(s)
+            }
+        }
+        self.suggestions = grouped
+    }
+
+    // MARK: - Grouping
+
+    static func groupTracks(tracks: [Track], artists: [Artist], mode: GroupingMode) -> [GenreGroup] {
+        switch mode {
+        case .genreOnly:
+            return groupTracksByGenre(tracks: tracks, artists: artists)
+        case .genreAndDecade:
+            return groupTracksByGenreAndDecade(tracks: tracks, artists: artists)
         }
     }
 
@@ -203,6 +315,35 @@ final class SpotifyClient: ObservableObject {
             }
         }
         return genreMap.map { key, value in
+            var deduped = [String: Track]()
+            for track in value { deduped[track.id] = track }
+            return GenreGroup(name: key, tracks: Array(deduped.values), mappedPlaylistId: nil)
+        }
+        .sorted { $0.name < $1.name }
+    }
+
+    static func groupTracksByGenreAndDecade(tracks: [Track], artists: [Artist]) -> [GenreGroup] {
+        var artistById = [String: Artist]()
+        for a in artists { artistById[a.id] = a }
+
+        var groupMap: [String: [Track]] = [:]
+        for t in tracks {
+            var assigned = false
+            let decade = t.decade ?? "Unknown Decade"
+            for aid in t.artistIds {
+                if let ar = artistById[aid], !ar.genres.isEmpty {
+                    for g in ar.genres {
+                        let key = "\(decade) \(g)"
+                        groupMap[key, default: []].append(t)
+                        assigned = true
+                    }
+                }
+            }
+            if !assigned {
+                groupMap["(Unknown)", default: []].append(t)
+            }
+        }
+        return groupMap.map { key, value in
             var deduped = [String: Track]()
             for track in value { deduped[track.id] = track }
             return GenreGroup(name: key, tracks: Array(deduped.values), mappedPlaylistId: nil)

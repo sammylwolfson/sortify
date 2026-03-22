@@ -21,6 +21,8 @@
 		Bdddddddddddddddddddddddd /* Sortify/Views/SignInModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = dddddddddddddddddddddddd /* Sortify/Views/SignInModal.swift */; };
 		Beeeeeeeeeeeeeeeeeeeeeeeee /* Sortify/Views/DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = eeeeeeeeeeeeeeeeeeeeeeee /* Sortify/Views/DashboardView.swift */; };
 		Bffffffffffffffffffffffff /* Sortify/Views/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ffffffffffffffffffffffff /* Sortify/Views/SettingsView.swift */; };
+		B0A0A0A0A0A0A0A0A0A0A0A0 /* Sortify/SuggestionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A0A0A0A0A0A0A0A0A0A0A0 /* Sortify/SuggestionEngine.swift */; };
+		B0B0B0B0B0B0B0B0B0B0B0B0 /* Sortify/Views/SuggestionBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C0C0C0C0C0C0C0C0C0C0C0 /* Sortify/Views/SuggestionBadge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,8 @@
 		dddddddddddddddddddddddd /* Sortify/Views/SignInModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/SignInModal.swift; sourceTree = "<group>"; };
 		eeeeeeeeeeeeeeeeeeeeeeee /* Sortify/Views/DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/DashboardView.swift; sourceTree = "<group>"; };
 		ffffffffffffffffffffffff /* Sortify/Views/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/SettingsView.swift; sourceTree = "<group>"; };
+		A0A0A0A0A0A0A0A0A0A0A0A0 /* Sortify/SuggestionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/SuggestionEngine.swift; sourceTree = "<group>"; };
+		C0C0C0C0C0C0C0C0C0C0C0C0 /* Sortify/Views/SuggestionBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Views/SuggestionBadge.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -80,12 +84,14 @@
 				777777777777777777777777 /* Sortify/SortifyAppApp.swift */,
 				888888888888888888888888 /* SpotifyAuth.swift */,
 				999999999999999999999999 /* SpotifyClient.swift */,
+				A0A0A0A0A0A0A0A0A0A0A0A0 /* Sortify/SuggestionEngine.swift */,
 				aaaaaaaaaaaaaaaaaaaaaaaa /* Sortify/Views/ContentView.swift */,
 				bbbbbbbbbbbbbbbbbbbbbbbb /* Sortify/Views/GenreRow.swift */,
 				cccccccccccccccccccccccc /* Sortify/Views/ToastView.swift */,
 				dddddddddddddddddddddddd /* Sortify/Views/SignInModal.swift */,
 				eeeeeeeeeeeeeeeeeeeeeeee /* Sortify/Views/DashboardView.swift */,
 				ffffffffffffffffffffffff /* Sortify/Views/SettingsView.swift */,
+				C0C0C0C0C0C0C0C0C0C0C0C0 /* Sortify/Views/SuggestionBadge.swift */,
 				A5A303F92EF0B4A800ADE1D3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -192,6 +198,8 @@
 				Bdddddddddddddddddddddddd /* Sortify/Views/SignInModal.swift in Sources */,
 				Beeeeeeeeeeeeeeeeeeeeeeeee /* Sortify/Views/DashboardView.swift in Sources */,
 				Bffffffffffffffffffffffff /* Sortify/Views/SettingsView.swift in Sources */,
+				B0A0A0A0A0A0A0A0A0A0A0A0 /* Sortify/SuggestionEngine.swift in Sources */,
+				B0B0B0B0B0B0B0B0B0B0B0B0 /* Sortify/Views/SuggestionBadge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

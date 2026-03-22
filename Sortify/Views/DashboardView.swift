@@ -25,6 +25,15 @@ struct DashboardView: View {
                             }
                             .disabled(!auth.isSignedIn)
                         }
+                        HStack(spacing: 12) {
+                            Picker("Group by", selection: $client.groupingMode) {
+                                ForEach(GroupingMode.allCases) { mode in
+                                    Text(mode.rawValue).tag(mode)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                            .frame(width: 260)
+                        }
                         if let last = lastRun {
                             Text("Last refreshed \(RelativeDateTimeFormatter().localizedString(for: last, relativeTo: Date()))")
                                 .font(.caption)
@@ -35,7 +44,7 @@ struct DashboardView: View {
                 }
                 Section(header: Text("Genres")) {
                     if client.genreGroups.isEmpty {
-                        Text("No genres yet. Tap “Fetch Liked Songs” after signing in.")
+                        Text("No genres yet. Tap \u{201C}Fetch Liked Songs\u{201D} after signing in.")
                             .foregroundColor(.secondary)
                     } else {
                         ForEach(client.genreGroups) { group in
@@ -69,13 +78,13 @@ struct DashboardView: View {
             // observe rate-limit notifications
             .onReceive(NotificationCenter.default.publisher(for: .spotifyRateLimited)) { n in
                 if let wait = n.object as? TimeInterval {
-                    statusMessage = "Rate limited — retrying in \(Int(wait))s"
-                    ToastManager.shared.show(message: "Rate limited — retrying in \(Int(wait))s", duration: max(4.0, wait))
+                    statusMessage = "Rate limited \u{2014} retrying in \(Int(wait))s"
+                    ToastManager.shared.show(message: "Rate limited \u{2014} retrying in \(Int(wait))s", duration: max(4.0, wait))
                     let waitSeconds = max(0, Int(wait))
                     Task {
                         for remaining in stride(from: waitSeconds, through: 1, by: -1) {
                             try await Task.sleep(nanoseconds: 1_000_000_000)
-                            DispatchQueue.main.async { statusMessage = "Rate limited — retrying in \(remaining-1)s" }
+                            DispatchQueue.main.async { statusMessage = "Rate limited \u{2014} retrying in \(remaining-1)s" }
                         }
                         DispatchQueue.main.async { statusMessage = nil }
                     }
