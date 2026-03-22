@@ -11,7 +11,6 @@
 		B222222222222222222222222 /* Sortify/KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 222222222222222222222222 /* Sortify/KeychainStore.swift */; };
 		B333333333333333333333333 /* Sortify/Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333333333333333333333333 /* Sortify/Notifications.swift */; };
 		B444444444444444444444444 /* Sortify/CacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 444444444444444444444444 /* Sortify/CacheStore.swift */; };
-		B555555555555555555555555 /* Sortify/RateLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555555555555555555555555 /* Sortify/RateLimiter.swift */; };
 		B666666666666666666666666 /* Sortify/ToastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666666666666666666666666 /* Sortify/ToastManager.swift */; };
 		B777777777777777777777777 /* Sortify/SortifyAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777777777777777777777777 /* Sortify/SortifyAppApp.swift */; };
 		B888888888888888888888888 /* SpotifyAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888888888888888888888888 /* SpotifyAuth.swift */; };
@@ -29,7 +28,6 @@
 		222222222222222222222222 /* Sortify/KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/KeychainStore.swift; sourceTree = "<group>"; };
 		333333333333333333333333 /* Sortify/Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/Notifications.swift; sourceTree = "<group>"; };
 		444444444444444444444444 /* Sortify/CacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/CacheStore.swift; sourceTree = "<group>"; };
-		555555555555555555555555 /* Sortify/RateLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/RateLimiter.swift; sourceTree = "<group>"; };
 		666666666666666666666666 /* Sortify/ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/ToastManager.swift; sourceTree = "<group>"; };
 		777777777777777777777777 /* Sortify/SortifyAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sortify/SortifyAppApp.swift; sourceTree = "<group>"; };
 		888888888888888888888888 /* SpotifyAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuth.swift; sourceTree = "<group>"; };
@@ -78,7 +76,6 @@
 				222222222222222222222222 /* Sortify/KeychainStore.swift */,
 				333333333333333333333333 /* Sortify/Notifications.swift */,
 				444444444444444444444444 /* Sortify/CacheStore.swift */,
-				555555555555555555555555 /* Sortify/RateLimiter.swift */,
 				666666666666666666666666 /* Sortify/ToastManager.swift */,
 				777777777777777777777777 /* Sortify/SortifyAppApp.swift */,
 				888888888888888888888888 /* SpotifyAuth.swift */,
@@ -185,7 +182,6 @@
 				B222222222222222222222222 /* Sortify/KeychainStore.swift in Sources */,
 				B333333333333333333333333 /* Sortify/Notifications.swift in Sources */,
 				B444444444444444444444444 /* Sortify/CacheStore.swift in Sources */,
-				B555555555555555555555555 /* Sortify/RateLimiter.swift in Sources */,
 				B666666666666666666666666 /* Sortify/ToastManager.swift in Sources */,
 				B777777777777777777777777 /* Sortify/SortifyAppApp.swift in Sources */,
 				B888888888888888888888888 /* SpotifyAuth.swift in Sources */,

@@ -5,6 +5,7 @@ import Network
 import Combine
 
 /// SpotifyAuth handles PKCE-based OAuth using ASWebAuthenticationSession and a tiny local HTTP listener on 127.0.0.1:8888
+@MainActor
 final class SpotifyAuth: ObservableObject {
     @Published var isSignedIn = false
     @Published var token: Token?
@@ -46,16 +47,12 @@ final class SpotifyAuth: ObservableObject {
                 do {
                     let refreshed = try await refreshAccessToken(refreshToken: refresh)
                     try storeToken(refreshed)
-                    DispatchQueue.main.async {
-                        self.token = refreshed
-                        self.isSignedIn = true
-                    }
+                    self.token = refreshed
+                    self.isSignedIn = true
                     return refreshed.accessToken
                 } catch {
                     // refresh failed: sign out and surface unauthenticated
-                    DispatchQueue.main.async {
-                        self.signOut()
-                    }
+                    self.signOut()
                     throw AuthError.unauthenticated
                 }
             }
@@ -152,7 +149,11 @@ final class SpotifyAuth: ObservableObject {
                 let decoder = JSONDecoder()
                 let resp = try decoder.decode(TokenResponse.self, from: data)
                 let token = Token(accessToken: resp.access_token, refreshToken: resp.refresh_token, expiresAt: Date().timeIntervalSince1970 + resp.expires_in, scope: resp.scope, tokenType: resp.token_type)
-                try? self?.storeToken(token)
+                do {
+                    try self?.storeToken(token)
+                } catch {
+                    print("[Sortify] Warning: failed to persist token to Keychain: \(error)")
+                }
                 DispatchQueue.main.async {
                     self?.token = token
                     self?.isSignedIn = true
@@ -217,8 +218,9 @@ private class PresentationProvider: NSObject, ASWebAuthenticationPresentationCon
 private class LocalPKCEStore {
     static let shared = LocalPKCEStore()
     private var verifier: String?
-    func set(verifier: String) { self.verifier = verifier }
-    func getVerifier() -> String? { verifier }
+    private let lock = NSLock()
+    func set(verifier: String) { lock.lock(); defer { lock.unlock() }; self.verifier = verifier }
+    func getVerifier() -> String? { lock.lock(); defer { lock.unlock() }; return verifier }
 }
 
 extension SpotifyAuth {
@@ -239,6 +241,8 @@ final class SimpleLocalHTTPServer {
     private let port: UInt16
     private var listener: NWListener?
     private var onCode: ((Result<String, Error>) -> Void)?
+    private var timeoutWork: DispatchWorkItem?
+    private let timeoutSeconds: TimeInterval = 120
 
     init(port: UInt16) { self.port = port }
 
@@ -258,9 +262,20 @@ final class SimpleLocalHTTPServer {
         }
 
         listener?.start(queue: .global())
+
+        // Auto-stop after timeout to avoid holding the port indefinitely
+        let work = DispatchWorkItem { [weak self] in
+            self?.stop()
+            self?.onCode?(.failure(AuthError.emptyResponse))
+            self?.onCode = nil
+        }
+        timeoutWork = work
+        DispatchQueue.global().asyncAfter(deadline: .now() + timeoutSeconds, execute: work)
     }
 
     func stop() {
+        timeoutWork?.cancel()
+        timeoutWork = nil
         listener?.cancel()
         listener = nil
     }
