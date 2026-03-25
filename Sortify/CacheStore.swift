@@ -81,4 +81,28 @@ final class CacheStore {
         let arr = try JSONDecoder().decode([String].self, from: data)
         return Set(arr)
     }
+
+    // MARK: - Playlist Filters persistence
+
+    private var filtersURL: URL? {
+        let fm = FileManager.default
+        if let appSupport = try? fm.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
+            let dir = appSupport.appendingPathComponent("Sortify", isDirectory: true)
+            try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+            return dir.appendingPathComponent("playlist-filters.json")
+        }
+        return nil
+    }
+
+    func savePlaylistFilters(_ filters: [PlaylistFilter]) throws {
+        guard let url = filtersURL else { return }
+        let data = try JSONEncoder().encode(filters)
+        try data.write(to: url)
+    }
+
+    func loadPlaylistFilters() throws -> [PlaylistFilter]? {
+        guard let url = filtersURL else { return nil }
+        let data = try Data(contentsOf: url)
+        return try JSONDecoder().decode([PlaylistFilter].self, from: data)
+    }
 }

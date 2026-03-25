@@ -47,6 +47,15 @@ struct PlaylistItem: Decodable {
     let name: String
 }
 
+// Playlist tracks response
+struct PlaylistTracksResponse: Decodable {
+    let items: [PlaylistTrackItem]
+}
+
+struct PlaylistTrackItem: Decodable {
+    let track: TrackResponse?
+}
+
 // Token response from Spotify (authorization code and refresh responses)
 struct TokenResponse: Decodable {
     let access_token: String

@@ -328,4 +328,115 @@ final class SortifyTests: XCTestCase {
         XCTAssertEqual(map["pop"], Set(["a1"]))
         XCTAssertEqual(map["jazz"], Set(["a2"]))
     }
+
+    // MARK: - PlaylistFilter matching tests
+
+    func testFilterMatchesAnyGenre() {
+        let filter = PlaylistFilter(
+            playlistId: "p1", playlistName: "Rock Mix",
+            genres: ["rock", "metal"], decades: [], matchMode: .anyGenre
+        )
+        let track = Track(id: "t1", name: "S", artistIds: ["a1"], artistNames: ["A"], albumName: nil, releaseDate: "2020-01-01", uri: "u:1")
+
+        XCTAssertTrue(filter.matches(track: track, trackGenres: ["rock", "pop"]))
+        XCTAssertTrue(filter.matches(track: track, trackGenres: ["metal"]))
+        XCTAssertFalse(filter.matches(track: track, trackGenres: ["jazz", "blues"]))
+        XCTAssertFalse(filter.matches(track: track, trackGenres: []))
+    }
+
+    func testFilterMatchesAllGenres() {
+        let filter = PlaylistFilter(
+            playlistId: "p1", playlistName: "Specific",
+            genres: ["rock", "indie"], decades: [], matchMode: .allGenres
+        )
+        let track = Track(id: "t1", name: "S", artistIds: [], artistNames: [], albumName: nil, uri: "u:1")
+
+        // Both filter genres must be present in track's genres
+        XCTAssertTrue(filter.matches(track: track, trackGenres: ["rock", "indie", "pop"]))
+        XCTAssertFalse(filter.matches(track: track, trackGenres: ["rock", "pop"]))
+    }
+
+    func testFilterMatchesGenreAndDecade() {
+        let filter = PlaylistFilter(
+            playlistId: "p1", playlistName: "90s Rock",
+            genres: ["rock"], decades: ["1990s"], matchMode: .genreAndDecade
+        )
+        let track90s = Track(id: "t1", name: "S", artistIds: [], artistNames: [], albumName: nil, releaseDate: "1995-06-01", uri: "u:1")
+        let track2020s = Track(id: "t2", name: "S2", artistIds: [], artistNames: [], albumName: nil, releaseDate: "2022-01-01", uri: "u:2")
+
+        XCTAssertTrue(filter.matches(track: track90s, trackGenres: ["rock"]))
+        XCTAssertFalse(filter.matches(track: track2020s, trackGenres: ["rock"])) // wrong decade
+        XCTAssertFalse(filter.matches(track: track90s, trackGenres: ["jazz"])) // wrong genre
+    }
+
+    func testFilterEmptyGenresMatchesAnything() {
+        let filter = PlaylistFilter(
+            playlistId: "p1", playlistName: "All",
+            genres: [], decades: [], matchMode: .anyGenre
+        )
+        let track = Track(id: "t1", name: "S", artistIds: [], artistNames: [], albumName: nil, uri: "u:1")
+        XCTAssertTrue(filter.matches(track: track, trackGenres: ["anything"]))
+        XCTAssertTrue(filter.matches(track: track, trackGenres: []))
+    }
+
+    // MARK: - PlaylistAnalyzer tests
+
+    func testAnalyzerRecommendation() {
+        let tracks = [
+            Track(id: "t1", name: "S1", artistIds: ["a1"], artistNames: ["A1"], albumName: nil, releaseDate: "1995-01-01", uri: "u:1"),
+            Track(id: "t2", name: "S2", artistIds: ["a1"], artistNames: ["A1"], albumName: nil, releaseDate: "1998-06-01", uri: "u:2"),
+            Track(id: "t3", name: "S3", artistIds: ["a2"], artistNames: ["A2"], albumName: nil, releaseDate: "1992-03-01", uri: "u:3"),
+            Track(id: "t4", name: "S4", artistIds: ["a2"], artistNames: ["A2"], albumName: nil, releaseDate: "2015-01-01", uri: "u:4"),
+        ]
+        let artists = [
+            Artist(id: "a1", name: "A1", genres: ["rock", "grunge"]),
+            Artist(id: "a2", name: "A2", genres: ["rock", "alternative"]),
+        ]
+
+        let rec = PlaylistAnalyzer.recommend(playlistId: "p1", playlistName: "My Rock", tracks: tracks, artists: artists)
+
+        // rock should be top genre (all 4 tracks)
+        XCTAssertEqual(rec.topGenres.first?.genre, "rock")
+        XCTAssertEqual(rec.topGenres.first?.percentage, 100.0)
+
+        // 1990s should be dominant decade (3 of 4 tracks)
+        XCTAssertTrue(rec.topDecades.contains(where: { $0.decade == "1990s" }))
+
+        // rock should be in suggested filter genres (>= 15% threshold)
+        XCTAssertTrue(rec.suggestedFilter.genres.contains("rock"))
+    }
+
+    func testAnalyzerEmptyPlaylist() {
+        let rec = PlaylistAnalyzer.recommend(playlistId: "p1", playlistName: "Empty", tracks: [], artists: [])
+        XCTAssertTrue(rec.topGenres.isEmpty)
+        XCTAssertTrue(rec.topDecades.isEmpty)
+        XCTAssertTrue(rec.suggestedFilter.genres.isEmpty)
+    }
+
+    func testAnalyzerDecadeDetection() {
+        // If dominant decade >= 50%, mode should be genreAndDecade
+        let tracks = (0..<10).map { i in
+            Track(id: "t\(i)", name: "S\(i)", artistIds: ["a1"], artistNames: ["A1"], albumName: nil, releaseDate: "199\(i % 10)-01-01", uri: "u:\(i)")
+        }
+        let artists = [Artist(id: "a1", name: "A1", genres: ["rock"])]
+
+        let rec = PlaylistAnalyzer.recommend(playlistId: "p1", playlistName: "90s", tracks: tracks, artists: artists)
+        // All tracks are 1990s, so decade is 100%
+        XCTAssertEqual(rec.suggestedFilter.matchMode, .genreAndDecade)
+    }
+
+    // MARK: - Filter recommendation summary
+
+    func testFilterRecommendationSummary() {
+        let rec = FilterRecommendation(
+            playlistId: "p1",
+            playlistName: "Test",
+            topGenres: [(genre: "rock", percentage: 80.0), (genre: "pop", percentage: 20.0)],
+            topDecades: [(decade: "1990s", percentage: 60.0)],
+            suggestedFilter: PlaylistFilter(playlistId: "p1", playlistName: "Test", genres: ["rock"], decades: ["1990s"], matchMode: .anyGenre)
+        )
+        let summary = rec.summary
+        XCTAssertTrue(summary.contains("rock"))
+        XCTAssertTrue(summary.contains("1990s"))
+    }
 }

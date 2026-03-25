@@ -14,6 +14,9 @@ final class SpotifyClient: ObservableObject {
     @Published var groupingMode: GroupingMode = .genreOnly {
         didSet { regroupFromCache() }
     }
+    @Published var playlistFilters: [PlaylistFilter] = []
+    @Published var sortResults: [SortResult] = []
+    @Published var filterRecommendations: [FilterRecommendation] = []
 
     private let baseURL = "https://api.spotify.com/v1"
     // single NetworkClient instance per SpotifyClient (created when auth is set)
@@ -29,8 +32,10 @@ final class SpotifyClient: ObservableObject {
     private(set) var playlistMapping: [String: String] = [:]
 
     // Cached data for re-grouping without network calls
-    private var cachedTracks: [Track] = []
-    private var cachedArtists: [Artist] = []
+    private(set) var cachedTracks: [Track] = []
+    private(set) var cachedArtists: [Artist] = []
+
+    var cachedTracksEmpty: Bool { cachedTracks.isEmpty }
 
     // Dismissed suggestion IDs
     private var dismissedSuggestionIds: Set<String> = []
@@ -46,6 +51,9 @@ final class SpotifyClient: ObservableObject {
         }
         if let dismissed = try? cache.loadDismissedSuggestions() {
             self.dismissedSuggestionIds = dismissed
+        }
+        if let filters = try? cache.loadPlaylistFilters() {
+            self.playlistFilters = filters
         }
         recomputeSuggestions()
     }
@@ -244,6 +252,146 @@ final class SpotifyClient: ObservableObject {
             print("[Sortify] Warning: failed to save dismissed suggestions: \(error)")
         }
         recomputeSuggestions()
+    }
+
+    // MARK: - Playlist Track Scanning
+
+    /// Fetch all tracks from a specific playlist.
+    func fetchPlaylistTracks(playlistId: String) async throws -> [Track] {
+        guard let network = self.networkClient else { throw ClientError.notAuthenticated }
+        var tracks: [Track] = []
+        var offset = 0
+        let limit = 100
+        while true {
+            let url = URL(string: "\(baseURL)/playlists/\(playlistId)/tracks?limit=\(limit)&offset=\(offset)&fields=items(track(id,name,uri,album(name,release_date),artists(id,name)))")!
+            let page: PlaylistTracksResponse = try await network.send(url)
+            for item in page.items {
+                if let tr = item.track {
+                    let t = Track(id: tr.id, name: tr.name, artistIds: tr.artists.compactMap { $0.id }, artistNames: tr.artists.compactMap { $0.name }, albumName: tr.album?.name, releaseDate: tr.album?.release_date, uri: tr.uri)
+                    tracks.append(t)
+                }
+            }
+            if page.items.count < limit { break }
+            offset += limit
+        }
+        return tracks
+    }
+
+    /// Scan a playlist and enrich tracks with artist genre data.
+    func scanPlaylist(playlistId: String) async throws -> (tracks: [Track], artists: [Artist]) {
+        self.isLoading = true
+        defer { self.isLoading = false }
+
+        let tracks = try await fetchPlaylistTracks(playlistId: playlistId)
+        let artistIds = Array(Set(tracks.flatMap { $0.artistIds }))
+        guard let network = self.networkClient else { throw ClientError.notAuthenticated }
+        let artists = try await fetchArtistsBatch(ids: artistIds, network: network)
+        return (tracks, artists)
+    }
+
+    // MARK: - Playlist Filter Management
+
+    func saveFilter(_ filter: PlaylistFilter) {
+        if let idx = playlistFilters.firstIndex(where: { $0.playlistId == filter.playlistId }) {
+            playlistFilters[idx] = filter
+        } else {
+            playlistFilters.append(filter)
+        }
+        try? cache.savePlaylistFilters(playlistFilters)
+    }
+
+    func removeFilter(playlistId: String) {
+        playlistFilters.removeAll { $0.playlistId == playlistId }
+        try? cache.savePlaylistFilters(playlistFilters)
+    }
+
+    func filterForPlaylist(_ playlistId: String) -> PlaylistFilter? {
+        playlistFilters.first { $0.playlistId == playlistId }
+    }
+
+    // MARK: - Playlist Analysis & Filter Recommendations
+
+    /// Analyze a playlist's tracks and recommend filter settings.
+    func analyzePlaylist(playlistId: String, playlistName: String) async throws -> FilterRecommendation {
+        let (tracks, artists) = try await scanPlaylist(playlistId: playlistId)
+        return PlaylistAnalyzer.recommend(playlistId: playlistId, playlistName: playlistName, tracks: tracks, artists: artists)
+    }
+
+    /// Analyze all user playlists and generate recommendations.
+    func analyzeAllPlaylists() async throws -> [FilterRecommendation] {
+        var recommendations: [FilterRecommendation] = []
+        for playlist in playlists {
+            // Skip playlists that already have filters
+            guard filterForPlaylist(playlist.id) == nil else { continue }
+            do {
+                let rec = try await analyzePlaylist(playlistId: playlist.id, playlistName: playlist.name)
+                // Only recommend if there's meaningful genre data
+                if !rec.topGenres.isEmpty {
+                    recommendations.append(rec)
+                }
+            } catch {
+                print("[Sortify] Skipping playlist \(playlist.name): \(error)")
+            }
+        }
+        self.filterRecommendations = recommendations
+        return recommendations
+    }
+
+    // MARK: - Smart Song Routing
+
+    /// Route liked songs to playlists based on filters. Returns sort results.
+    func routeLikedSongs() -> [SortResult] {
+        guard !playlistFilters.isEmpty else { return [] }
+
+        let artistById = Dictionary(uniqueKeysWithValues: cachedArtists.map { ($0.id, $0) })
+
+        var results: [SortResult] = []
+        for track in cachedTracks {
+            // Gather all genres for this track's artists
+            var trackGenres: [String] = []
+            for aid in track.artistIds {
+                if let artist = artistById[aid] {
+                    trackGenres.append(contentsOf: artist.genres)
+                }
+            }
+
+            // Find all matching playlists
+            var matches: [(playlist: Playlist, filter: PlaylistFilter)] = []
+            for filter in playlistFilters {
+                if filter.matches(track: track, trackGenres: trackGenres) {
+                    if let playlist = playlists.first(where: { $0.id == filter.playlistId }) {
+                        matches.append((playlist: playlist, filter: filter))
+                    }
+                }
+            }
+            results.append(SortResult(track: track, matchedPlaylists: matches))
+        }
+        self.sortResults = results
+        return results
+    }
+
+    /// Move sorted tracks to their matched playlists. Returns count of tracks moved.
+    func executeSortResults(auth: SpotifyAuth, results: [SortResult], progress: ((Int, Int) -> Void)? = nil) async throws -> Int {
+        // Group tracks by target playlist
+        var playlistTracks: [String: [String]] = [:]  // playlistId -> [uri]
+        for result in results where !result.isUnsorted {
+            // Use the first (best) match
+            if let match = result.matchedPlaylists.first {
+                playlistTracks[match.playlist.id, default: []].append(result.track.uri)
+            }
+        }
+
+        var totalMoved = 0
+        let playlistCount = playlistTracks.count
+        var completed = 0
+
+        for (playlistId, uris) in playlistTracks {
+            try await addTracksToPlaylist(auth: auth, playlistId: playlistId, uris: uris)
+            totalMoved += uris.count
+            completed += 1
+            progress?(completed, playlistCount)
+        }
+        return totalMoved
     }
 
     // MARK: - Regrouping
