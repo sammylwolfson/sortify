@@ -30,18 +30,18 @@
 
 /* Begin PBXFileReference section */
 		BE0001002EF5000000000001 /* Sortify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sortify.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		BE1000012EF5000000000001 /* CacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheStore.swift; sourceTree = SOURCE_ROOT; };
-		BE1000022EF5000000000001 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = SOURCE_ROOT; };
-		BE1000032EF5000000000001 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = SOURCE_ROOT; };
-		BE1000042EF5000000000001 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = SOURCE_ROOT; };
-		BE1000052EF5000000000001 /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClient.swift; sourceTree = SOURCE_ROOT; };
-		BE1000062EF5000000000001 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = SOURCE_ROOT; };
-		BE1000072EF5000000000001 /* RateLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateLimiter.swift; sourceTree = SOURCE_ROOT; };
-		BE1000082EF5000000000001 /* SortifyAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortifyAppApp.swift; sourceTree = SOURCE_ROOT; };
-		BE1000092EF5000000000001 /* SpotifyAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAPIModels.swift; sourceTree = SOURCE_ROOT; };
-		BE10000A2EF5000000000001 /* SpotifyAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuth.swift; sourceTree = SOURCE_ROOT; };
-		BE10000B2EF5000000000001 /* SpotifyClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyClient.swift; sourceTree = SOURCE_ROOT; };
-		BE10000C2EF5000000000001 /* ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastManager.swift; sourceTree = SOURCE_ROOT; };
+		BE1000012EF5000000000001 /* CacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage/CacheStore.swift; sourceTree = SOURCE_ROOT; };
+		BE1000022EF5000000000001 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Errors.swift; sourceTree = SOURCE_ROOT; };
+		BE1000032EF5000000000001 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage/KeychainStore.swift; sourceTree = SOURCE_ROOT; };
+		BE1000042EF5000000000001 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Models.swift; sourceTree = SOURCE_ROOT; };
+		BE1000052EF5000000000001 /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clients/NetworkClient.swift; sourceTree = SOURCE_ROOT; };
+		BE1000062EF5000000000001 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Support/Notifications.swift; sourceTree = SOURCE_ROOT; };
+		BE1000072EF5000000000001 /* RateLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clients/RateLimiter.swift; sourceTree = SOURCE_ROOT; };
+		BE1000082EF5000000000001 /* SortifyAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/SortifyAppApp.swift; sourceTree = SOURCE_ROOT; };
+		BE1000092EF5000000000001 /* SpotifyAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/SpotifyAPIModels.swift; sourceTree = SOURCE_ROOT; };
+		BE10000A2EF5000000000001 /* SpotifyAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth/SpotifyAuth.swift; sourceTree = SOURCE_ROOT; };
+		BE10000B2EF5000000000001 /* SpotifyClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clients/SpotifyClient.swift; sourceTree = SOURCE_ROOT; };
+		BE10000C2EF5000000000001 /* ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI/Toast/ToastManager.swift; sourceTree = SOURCE_ROOT; };
 		BE10000D2EF5000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		BE10000E2EF5000000000001 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		BE10000F2EF5000000000001 /* GenreRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreRow.swift; sourceTree = "<group>"; };
@@ -112,7 +112,7 @@
 				BE1000112EF5000000000001 /* SignInModal.swift */,
 				BE1000122EF5000000000001 /* ToastView.swift */,
 			);
-			path = Views;
+			path = UI/Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

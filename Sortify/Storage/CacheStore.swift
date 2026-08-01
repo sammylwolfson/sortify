@@ -7,6 +7,7 @@ final class CacheStore {
     struct CachedPayload: Codable {
         var tracks: [Track]
         var artists: [Artist]
+        var audioFeatures: [String: AudioFeatures]?
         var savedAt: Date
     }
 
@@ -20,8 +21,8 @@ final class CacheStore {
         return nil
     }
 
-    func save(tracks: [Track], artists: [Artist]) throws {
-        let payload = CachedPayload(tracks: tracks, artists: artists, savedAt: Date())
+    func save(tracks: [Track], artists: [Artist], audioFeatures: [String: AudioFeatures]? = nil) throws {
+        let payload = CachedPayload(tracks: tracks, artists: artists, audioFeatures: audioFeatures, savedAt: Date())
         guard let url = cacheURL else { return }
         let data = try JSONEncoder().encode(payload)
         try data.write(to: url)
@@ -55,6 +56,30 @@ final class CacheStore {
         guard let url = mappingURL else { return nil }
         let data = try Data(contentsOf: url)
         let map = try JSONDecoder().decode([String: String].self, from: data)
+        return map
+    }
+
+    // Playlist genre filters persistence
+    private var genreFiltersURL: URL? {
+        let fm = FileManager.default
+        if let appSupport = try? fm.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
+            let dir = appSupport.appendingPathComponent("Sortify", isDirectory: true)
+            try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+            return dir.appendingPathComponent("playlist-genre-filters.json")
+        }
+        return nil
+    }
+
+    func savePlaylistGenreFilters(map: [String: [String]]) throws {
+        guard let url = genreFiltersURL else { return }
+        let data = try JSONEncoder().encode(map)
+        try data.write(to: url)
+    }
+
+    func loadPlaylistGenreFilters() throws -> [String: [String]]? {
+        guard let url = genreFiltersURL else { return nil }
+        let data = try Data(contentsOf: url)
+        let map = try JSONDecoder().decode([String: [String]].self, from: data)
         return map
     }
 }

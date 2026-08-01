@@ -2,6 +2,11 @@ import Foundation
 import Combine
 
 final class SpotifyClient: ObservableObject {
+    enum TrackSource: Equatable {
+        case likedSongs
+        case playlist(id: String)
+    }
+
     // ref to auth so we can request tokens when sending requests
     weak var auth: SpotifyAuth?
 
@@ -9,6 +14,8 @@ final class SpotifyClient: ObservableObject {
     @Published var genreGroups: [GenreGroup] = []
     @Published var isLoading = false
     @Published var lastError: Error?
+    @Published var availableGenres: [String] = []
+    @Published var playlistGenreFilters: [String: [String]] = [:]
 
     private let baseURL = "https://api.spotify.com/v1"
     private let tokenKey = "sortify.spotify.token"
@@ -21,15 +28,23 @@ final class SpotifyClient: ObservableObject {
 
     // A lightweight cache
     private let cache = CacheStore.shared
+    private var audioFeaturesCache: [String: AudioFeatures] = [:]
     // in-memory mapping of genre -> playlistId
     private(set) var playlistMapping: [String: String] = [:]
 
     init() {
         if let cached = try? cache.loadCachedTracks() {
             self.genreGroups = Self.groupTracksByGenre(tracks: cached.tracks, artists: cached.artists)
+            if let af = cached.audioFeatures {
+                self.audioFeaturesCache = af
+            }
+            self.availableGenres = Self.extractGenres(from: cached.artists)
         }
         if let map = try? cache.loadPlaylistMapping() {
             self.playlistMapping = map
+        }
+        if let filters = try? cache.loadPlaylistGenreFilters() {
+            self.playlistGenreFilters = filters
         }
     }
 
@@ -44,21 +59,7 @@ final class SpotifyClient: ObservableObject {
                 self.isLoading = true
 
                 // fetch saved tracks via Codable responses
-                var allTracks: [Track] = []
-                var offset = 0
-                let limit = 50
-                while true {
-                    let pageURL = URL(string: "\(baseURL)/me/tracks?limit=\(limit)&offset=\(offset)")!
-                    let page: SavedTracksResponse = try await network.send(pageURL)
-                    for item in page.items {
-                        if let tr = item.track {
-                            let t = Track(id: tr.id, name: tr.name, artistIds: tr.artists.compactMap { $0.id }, artistNames: tr.artists.compactMap { $0.name }, albumName: tr.album?.name, uri: tr.uri)
-                            allTracks.append(t)
-                        }
-                    }
-                    if page.items.count < limit { break }
-                    offset += limit
-                }
+                let allTracks = try await fetchSavedTracksPaged(network: network)
 
                 // gather artist ids and fetch artists in batches
                 let artistIds = Array(Set(allTracks.flatMap { $0.artistIds }))
@@ -68,12 +69,13 @@ final class SpotifyClient: ObservableObject {
                 for chunk in idChunks {
                     let idsParam = chunk.joined(separator: ",")
                     let artistsURL = URL(string: "\(baseURL)/artists?ids=\(idsParam)")!
-                        let resp: ArtistsResponse = try await network.send(artistsURL)
+                    let resp: ArtistsResponse = try await network.send(artistsURL)
                     for a in resp.artists {
                         allArtists.append(Artist(id: a.id, name: a.name, genres: a.genres))
                     }
                 }
 
+                let enrichedTracks = Self.applyGenres(to: allTracks, artists: allArtists)
                 let groups = Self.groupTracksByGenre(tracks: allTracks, artists: allArtists)
                 let mapped = groups.map { g -> GenreGroup in
                     var copy = g
@@ -82,7 +84,8 @@ final class SpotifyClient: ObservableObject {
                 }
                 DispatchQueue.main.async {
                     self.genreGroups = mapped
-                    try? self.cache.save(tracks: allTracks, artists: allArtists)
+                    self.availableGenres = Self.extractGenres(from: allArtists)
+                    try? self.cache.save(tracks: enrichedTracks, artists: allArtists, audioFeatures: self.audioFeaturesCache)
                     self.isLoading = false
                     completion(.success(()))
                 }
@@ -103,11 +106,32 @@ final class SpotifyClient: ObservableObject {
         var offset = 0
         let limit = 50
         while true {
+            try Task.checkCancellation()
             let pageURL = URL(string: "\(baseURL)/me/tracks?limit=\(limit)&offset=\(offset)")!
             let page: SavedTracksResponse = try await network.send(pageURL)
             for item in page.items {
                 if let tr = item.track {
-                    let t = Track(id: tr.id, name: tr.name, artistIds: tr.artists.compactMap { $0.id }, artistNames: tr.artists.compactMap { $0.name }, albumName: tr.album?.name, uri: tr.uri)
+                    let t = Track(id: tr.id, name: tr.name, artistIds: tr.artists.compactMap { $0.id }, artistNames: tr.artists.compactMap { $0.name }, albumName: tr.album?.name, uri: tr.uri, genres: [])
+                    tracks.append(t)
+                }
+            }
+            if page.items.count < limit { break }
+            offset += limit
+        }
+        return tracks
+    }
+
+    private func fetchPlaylistTracksPaged(playlistId: String, network: NetworkClient) async throws -> [Track] {
+        var tracks: [Track] = []
+        var offset = 0
+        let limit = 100
+        while true {
+            try Task.checkCancellation()
+            let pageURL = URL(string: "\(baseURL)/playlists/\(playlistId)/tracks?limit=\(limit)&offset=\(offset)")!
+            let page: PlaylistTracksResponse = try await network.send(pageURL)
+            for item in page.items {
+                if let tr = item.track {
+                    let t = Track(id: tr.id, name: tr.name, artistIds: tr.artists.compactMap { $0.id }, artistNames: tr.artists.compactMap { $0.name }, albumName: tr.album?.name, uri: tr.uri, genres: [])
                     tracks.append(t)
                 }
             }
@@ -122,6 +146,7 @@ final class SpotifyClient: ObservableObject {
         let chunkSize = 50
         let idChunks = stride(from: 0, to: ids.count, by: chunkSize).map { Array(ids[$0..<min(ids.count, $0+chunkSize)]) }
         for chunk in idChunks {
+            try Task.checkCancellation()
             let url = URL(string: "\(baseURL)/artists?ids=\(chunk.joined(separator: ","))")!
             let resp: ArtistsResponse = try await network.send(url)
             for a in resp.artists {
@@ -171,14 +196,108 @@ final class SpotifyClient: ObservableObject {
         let tracks = try await fetchSavedTracksPaged(network: network)
         let artistIds = Array(Set(tracks.flatMap { $0.artistIds }))
         let artists = try await fetchArtistsBatch(ids: artistIds, network: network)
+        let enrichedTracks = Self.applyGenres(to: tracks, artists: artists)
         let groups = Self.groupTracksByGenre(tracks: tracks, artists: artists)
         let mapped = groups.map { g -> GenreGroup in
             var copy = g
             copy.mappedPlaylistId = self.playlistMapping[g.name]
             return copy
         }
-        try? self.cache.save(tracks: tracks, artists: artists)
+        self.availableGenres = Self.extractGenres(from: artists)
+        try? self.cache.save(tracks: enrichedTracks, artists: artists, audioFeatures: self.audioFeaturesCache)
         return mapped
+    }
+
+    func fetchTracksAndGroupAsync(source: TrackSource, sortBy: SortBy) async throws -> ([GenreGroup], [Track]) {
+        guard let network = self.networkClient else { throw ClientError.notAuthenticated }
+        self.isLoading = true
+        defer { self.isLoading = false }
+
+        let tracks: [Track]
+        switch source {
+        case .likedSongs:
+            tracks = try await fetchSavedTracksPaged(network: network)
+        case .playlist(let id):
+            tracks = try await fetchPlaylistTracksPaged(playlistId: id, network: network)
+        }
+
+        let artistIds = Array(Set(tracks.flatMap { $0.artistIds }))
+        let artists = try await fetchArtistsBatch(ids: artistIds, network: network)
+        let enrichedTracks = Self.applyGenres(to: tracks, artists: artists)
+        let groups: [GenreGroup]
+        switch sortBy {
+        case .genre:
+            groups = Self.groupTracksByGenre(tracks: tracks, artists: artists)
+        case .bpm, .energy, .danceability, .valence:
+            let features = try await fetchAudioFeatures(ids: tracks.map { $0.id }, network: network)
+            groups = Self.groupTracksByFeature(tracks: tracks, features: features, sortBy: sortBy)
+        }
+        let mapped = groups.map { g -> GenreGroup in
+            var copy = g
+            copy.mappedPlaylistId = self.playlistMapping[g.name]
+            return copy
+        }
+        self.availableGenres = Self.extractGenres(from: artists)
+        if case .likedSongs = source {
+            try? self.cache.save(tracks: enrichedTracks, artists: artists, audioFeatures: self.audioFeaturesCache)
+        }
+        return (mapped, enrichedTracks)
+    }
+
+    func fetchTracksAsync(source: TrackSource) async throws -> [Track] {
+        guard let network = self.networkClient else { throw ClientError.notAuthenticated }
+        self.isLoading = true
+        defer { self.isLoading = false }
+
+        let tracks: [Track]
+        switch source {
+        case .likedSongs:
+            tracks = try await fetchSavedTracksPaged(network: network)
+        case .playlist(let id):
+            tracks = try await fetchPlaylistTracksPaged(playlistId: id, network: network)
+        }
+        let artistIds = Array(Set(tracks.flatMap { $0.artistIds }))
+        let artists = try await fetchArtistsBatch(ids: artistIds, network: network)
+        self.availableGenres = Self.extractGenres(from: artists)
+        return Self.applyGenres(to: tracks, artists: artists)
+    }
+
+    private func fetchAudioFeatures(ids: [String], network: NetworkClient) async throws -> [String: AudioFeatures] {
+        let uniqueIds = Array(Set(ids))
+        var result: [String: AudioFeatures] = [:]
+
+        // Use cached features when available
+        for id in uniqueIds {
+            if let cached = audioFeaturesCache[id] {
+                result[id] = cached
+            }
+        }
+
+        let missing = uniqueIds.filter { result[$0] == nil }
+        if missing.isEmpty {
+            return result
+        }
+
+        let chunkSize = 100
+        let chunks = stride(from: 0, to: missing.count, by: chunkSize).map { Array(missing[$0..<min(missing.count, $0+chunkSize)]) }
+        for chunk in chunks {
+            try Task.checkCancellation()
+            let url = URL(string: "\(baseURL)/audio-features?ids=\(chunk.joined(separator: ","))")!
+            let resp: AudioFeaturesResponse = try await network.send(url)
+            for item in resp.audio_features {
+                if let af = item {
+                    let mapped = AudioFeatures(id: af.id, tempo: af.tempo, energy: af.energy, danceability: af.danceability, valence: af.valence)
+                    result[af.id] = mapped
+                    audioFeaturesCache[af.id] = mapped
+                }
+            }
+        }
+        return result
+    }
+
+    func fetchAudioFeaturesForTracks(ids: [String]) async throws -> [String: AudioFeatures] {
+        guard let network = self.networkClient else { throw ClientError.notAuthenticated }
+        return try await fetchAudioFeatures(ids: ids, network: network)
     }
 
     func loadPlaylistMapping() {
@@ -211,6 +330,23 @@ final class SpotifyClient: ObservableObject {
             let url = URL(string: "\(baseURL)/playlists/\(playlistId)/tracks")!
             let body = try JSONSerialization.data(withJSONObject: ["uris": chunk])
             let (_, resp) = try await network.sendRaw(url: url, method: "POST", body: body)
+            if let http = resp as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
+                throw ClientError.httpError(code: http.statusCode)
+            }
+            progress?(i + 1, total)
+        }
+    }
+
+    /// Remove (unlike) saved tracks from the user's library in chunks.
+    func removeSavedTracks(auth: SpotifyAuth, ids: [String], progress: ((Int, Int) -> Void)? = nil) async throws {
+        guard let network = self.networkClient else { throw ClientError.notAuthenticated }
+        let chunkSize = 50
+        let chunks = stride(from: 0, to: ids.count, by: chunkSize).map { Array(ids[$0..<min(ids.count, $0+chunkSize)]) }
+        let total = chunks.count
+
+        for (i, chunk) in chunks.enumerated() {
+            let url = URL(string: "\(baseURL)/me/tracks?ids=\(chunk.joined(separator: ","))")!
+            let (_, resp) = try await network.sendRaw(url: url, method: "DELETE", body: nil)
             if let http = resp as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
                 throw ClientError.httpError(code: http.statusCode)
             }
@@ -321,5 +457,76 @@ final class SpotifyClient: ObservableObject {
             return GenreGroup(name: key, tracks: Array(deduped.values), mappedPlaylistId: nil)
         }
         .sorted { $0.name < $1.name }
+    }
+
+    static func applyGenres(to tracks: [Track], artists: [Artist]) -> [Track] {
+        var artistById = [String: Artist]()
+        for a in artists { artistById[a.id] = a }
+
+        return tracks.map { track in
+            var merged: [String] = []
+            for aid in track.artistIds {
+                if let ar = artistById[aid], !ar.genres.isEmpty {
+                    merged.append(contentsOf: ar.genres)
+                }
+            }
+            var updated = track
+            let unique = Array(Set(merged)).sorted()
+            updated.genres = unique.isEmpty ? ["(Unknown)"] : unique
+            return updated
+        }
+    }
+
+    static func groupTracksByFeature(tracks: [Track], features: [String: AudioFeatures], sortBy: SortBy) -> [GenreGroup] {
+        var buckets: [String: [Track]] = [:]
+        for t in tracks {
+            guard let f = features[t.id] else {
+                buckets["(Unknown)", default: []].append(t)
+                continue
+            }
+            let label: String
+            switch sortBy {
+            case .bpm:
+                label = bucketLabel(value: f.tempo, low: 90, high: 130, prefix: "BPM")
+            case .energy:
+                label = bucketLabel(value: f.energy, low: 0.33, high: 0.66, prefix: "Energy")
+            case .danceability:
+                label = bucketLabel(value: f.danceability, low: 0.33, high: 0.66, prefix: "Danceability")
+            case .valence:
+                label = bucketLabel(value: f.valence, low: 0.33, high: 0.66, prefix: "Valence")
+            case .genre:
+                label = "(Unknown)"
+            }
+            buckets[label, default: []].append(t)
+        }
+
+        return buckets.map { key, value in
+            var deduped = [String: Track]()
+            for track in value { deduped[track.id] = track }
+            return GenreGroup(name: key, tracks: Array(deduped.values), mappedPlaylistId: nil)
+        }
+        .sorted { $0.name < $1.name }
+    }
+
+    static func extractGenres(from artists: [Artist]) -> [String] {
+        let all = artists.flatMap { $0.genres }
+        let unique = Array(Set(all)).filter { !$0.isEmpty }
+        return unique.sorted()
+    }
+
+    func genresForPlaylist(_ playlistId: String) -> Set<String> {
+        let list = playlistGenreFilters[playlistId] ?? []
+        return Set(list)
+    }
+
+    func setGenres(_ genres: Set<String>, for playlistId: String) {
+        playlistGenreFilters[playlistId] = Array(genres).sorted()
+        try? cache.savePlaylistGenreFilters(map: playlistGenreFilters)
+    }
+
+    private static func bucketLabel(value: Double, low: Double, high: Double, prefix: String) -> String {
+        if value < low { return "\(prefix) • Low" }
+        if value < high { return "\(prefix) • Medium" }
+        return "\(prefix) • High"
     }
 }

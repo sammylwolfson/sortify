@@ -1,7 +1,6 @@
 import Foundation
 import AuthenticationServices
 import CryptoKit
-import Network
 import Combine
 
 /// SpotifyAuth handles PKCE-based OAuth using ASWebAuthenticationSession and a tiny local HTTP listener on 127.0.0.1:8888
@@ -9,14 +8,17 @@ final class SpotifyAuth: ObservableObject {
     @Published var isSignedIn = false
     @Published var token: Token?
 
-    private var server: SimpleLocalHTTPServer?
     private var currentSession: ASWebAuthenticationSession?
     private var cancellables = Set<AnyCancellable>()
 
-    private let redirectURI = "http://127.0.0.1:8888/callback"
+    private let redirectURI = "sortify://callback"
+    private let callbackScheme = "sortify"
+
+    // Debug helper to surface the exact redirect URI being sent to Spotify.
+    var debugRedirectURI: String { redirectURI }
     // Replace with your app's client id; for packaging, consider allowing users to set this in Settings
     var clientId: String = "SPOTIFY_CLIENT_ID_PLACEHOLDER"
-    private let scopes = "user-library-read playlist-modify-private playlist-modify-public playlist-read-private"
+    private let scopes = "user-library-read user-library-modify playlist-modify-private playlist-modify-public playlist-read-private"
 
     private let keychainKey = "sortify.spotify.token"
 
@@ -66,17 +68,6 @@ final class SpotifyAuth: ObservableObject {
 
     /// Existing callback-based sign-in (used by UI). Also see `signIn()` async variant below.
     func signIn(completion: @escaping (Result<Void, Error>) -> Void) {
-        // Start local server to capture callback
-        server = SimpleLocalHTTPServer(port: 8888)
-        server?.start { [weak self] result in
-            switch result {
-            case .success(let code):
-                self?.exchangeCodeForToken(code: code, completion: completion)
-            case .failure(let err):
-                completion(.failure(err))
-            }
-        }
-
         // PKCE
         let codeVerifier = Self.generateCodeVerifier()
         let codeChallenge = Self.codeChallenge(from: codeVerifier)
@@ -85,24 +76,35 @@ final class SpotifyAuth: ObservableObject {
         LocalPKCEStore.shared.set(verifier: codeVerifier)
 
         var comps = URLComponents(string: "https://accounts.spotify.com/authorize")!
-        comps.queryItems = [
-            URLQueryItem(name: "client_id", value: clientId),
-            URLQueryItem(name: "response_type", value: "code"),
-            URLQueryItem(name: "redirect_uri", value: redirectURI),
-            URLQueryItem(name: "scope", value: scopes),
-            URLQueryItem(name: "code_challenge_method", value: "S256"),
-            URLQueryItem(name: "code_challenge", value: codeChallenge)
+        let params: [String: String] = [
+            "client_id": clientId,
+            "response_type": "code",
+            "redirect_uri": redirectURI,
+            "scope": scopes,
+            "code_challenge_method": "S256",
+            "code_challenge": codeChallenge
         ]
+        if let encoded = params.percentEncoded(),
+           let query = String(data: encoded, encoding: .utf8) {
+            comps.percentEncodedQuery = query
+        }
 
         guard let authURL = comps.url else { completion(.failure(AuthError.invalidAuthURL)); return }
 
-        currentSession = ASWebAuthenticationSession(url: authURL, callbackURLScheme: nil) { callbackURL, error in
-            // We rely on the local server to capture the code; ASWebAuthenticationSession can be used to present web UI only
+        currentSession = ASWebAuthenticationSession(url: authURL, callbackURLScheme: callbackScheme) { [weak self] callbackURL, error in
             if let err = error {
                 completion(.failure(err))
-            } else {
-                // wait for server to capture
+                return
             }
+            guard
+                let url = callbackURL,
+                let comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                let code = comps.queryItems?.first(where: { $0.name == "code" })?.value
+            else {
+                completion(.failure(AuthError.emptyResponse))
+                return
+            }
+            self?.exchangeCodeForToken(code: code, completion: completion)
         }
         currentSession?.presentationContextProvider = PresentationProvider.shared
         currentSession?.start()
@@ -145,7 +147,6 @@ final class SpotifyAuth: ObservableObject {
         req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
 
         URLSession.shared.dataTask(with: req) { [weak self] data, resp, err in
-            defer { self?.server?.stop() }
             if let err = err { completion(.failure(err)); return }
             guard let data = data else { completion(.failure(AuthError.emptyResponse)); return }
             do {
@@ -234,65 +235,6 @@ extension SpotifyAuth {
     }
 }
 
-// MARK: - tiny local HTTP server (very small, only for the auth callback)
-final class SimpleLocalHTTPServer {
-    private let port: UInt16
-    private var listener: NWListener?
-    private var onCode: ((Result<String, Error>) -> Void)?
-
-    init(port: UInt16) { self.port = port }
-
-    func start(completion: @escaping (Result<String, Error>) -> Void) {
-        self.onCode = completion
-        do {
-            let params = NWParameters.tcp
-            listener = try NWListener(using: params, on: NWEndpoint.Port(rawValue: port)!)
-        } catch {
-            completion(.failure(error))
-            return
-        }
-
-        listener?.newConnectionHandler = { conn in
-            conn.start(queue: .global())
-            self.handleConnection(conn)
-        }
-
-        listener?.start(queue: .global())
-    }
-
-    func stop() {
-        listener?.cancel()
-        listener = nil
-    }
-
-    private func handleConnection(_ conn: NWConnection) {
-        conn.receive(minimumIncompleteLength: 1, maximumLength: 16_384) { data, _, isComplete, error in
-            defer { conn.cancel() }
-            guard let data = data, let request = String(data: data, encoding: .utf8) else { return }
-            // Simple parse for GET /callback?code=...
-            if let range = request.range(of: "GET ") {
-                let rest = request[range.upperBound...]
-                if let end = rest.firstIndex(of: " ") {
-                    let path = String(rest[..<end])
-                    if let comps = URLComponents(string: "http://localhost\(path)"), let queryItems = comps.queryItems {
-                        if let code = queryItems.first(where: { $0.name == "code" })?.value {
-                            // send a small HTML page back
-                            let resp = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n<html><body><h3>Authentication received. You can close this window.</h3></body></html>"
-                            conn.send(content: resp.data(using: .utf8), completion: .contentProcessed({ _ in }))
-                            self.onCode?(.success(code))
-                            return
-                        }
-                    }
-                }
-            }
-            // if we get here, send 400
-            let resp = "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain\r\n\r\nBad Request"
-            conn.send(content: resp.data(using: .utf8), completion: .contentProcessed({ _ in }))
-            self.onCode?(.failure(AuthError.emptyResponse))
-        }
-    }
-}
-
 // MARK: - helpers
 extension Data {
     func base64URLEncodedString() -> String {
@@ -317,7 +259,7 @@ extension Dictionary where Key == String, Value == String {
 
 extension CharacterSet {
     static let urlQueryValueAllowed: CharacterSet = {
-        let generalDelimitersToEncode = ":#[]@"
+        let generalDelimitersToEncode = ":#[]@/"
         let subDelimitersToEncode = "!$&'()*+,;="
 
         var allowed = CharacterSet.urlQueryAllowed

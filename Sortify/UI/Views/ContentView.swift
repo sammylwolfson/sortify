@@ -23,6 +23,9 @@ struct ContentView: View {
                             }
                         }
                     }
+                    Text("Redirect URI: \(auth.debugRedirectURI)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
                 .padding()
             }
